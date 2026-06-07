@@ -114,12 +114,22 @@ void BaseScene::Update()
     }
 
     // 5. 지연 삭제 (Update 루프가 완전히 끝난 후 플래그가 켜진 오브젝트 일괄 제거)
-    // TODO: 별도 배열에 파괴된 오브젝트들 추가하고, for문 밖에서 이것들 delete
+    for (auto& Obj : SceneObjects)
+    {
+        if (Obj != nullptr && Obj->IsDestroyed())
+        {
+            delete Obj;
+            Obj = nullptr;
+        }
+    }
+
     SceneObjects.erase(
-        std::remove_if(SceneObjects.begin(), SceneObjects.end(),
-        [](const GameObject* obj) {
-        return obj->IsDestroyed();
-    }),
+        std::remove_if(
+            SceneObjects.begin(),
+            SceneObjects.end(),
+            [](const GameObject* obj) {
+                return obj == nullptr || obj->IsDestroyed();
+            }),
         SceneObjects.end()
     );
 }

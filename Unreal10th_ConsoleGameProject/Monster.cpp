@@ -41,7 +41,9 @@ void Monster::OnCollisionEnter(GameObject* Other)
 {
     if (Other != nullptr && Other->GetCollisionLayer() == CollisionLayer::Player)
     {
-        printf("Monster.OnCollisionEnter() - Collide With Player : %d\n", CollisionCount);
+        bIsDestroyed_ = true;
+#if 0
+        printf("Monster.OnCollisionEnter() - Collide with Player : %d\n", CollisionCount);
         CollisionCount++;
         for (int i = 0; i < Transform_.Height; i++)
         {
@@ -50,6 +52,8 @@ void Monster::OnCollisionEnter(GameObject* Other)
                 RenderString_[i][j] = CollisionCount % 10 + L'0';
             }
         }
+        TurnAround();
+#endif
     }
     else
     {
