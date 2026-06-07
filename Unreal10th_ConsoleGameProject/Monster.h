@@ -12,6 +12,7 @@ public:
 
     virtual void Update() override;
     virtual void OnCollisionEnter(GameObject* Other) override;
+    virtual void OnCollisionStay(GameObject* Other) override;
     virtual void OnCollisionExit(GameObject* Other) override;
 
     void TurnAround();

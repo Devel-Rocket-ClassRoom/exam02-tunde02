@@ -53,10 +53,16 @@ void Monster::OnCollisionEnter(GameObject* Other)
     }
     else
     {
-        printf("Monster.OnCollisionEnter() - Collide with outline. : %d\n", CollisionCount);
+        printf("Monster.OnCollisionEnter() - Collide with outlin : %d\n", CollisionCount);
         CollisionCount++;
         TurnAround();
     }
+}
+
+void Monster::OnCollisionStay(GameObject* Other)
+{
+    CollisionCount++;
+    printf("Monster.OnCollisionStay() - %d\n", CollisionCount);
 }
 
 void Monster::OnCollisionExit(GameObject* Other)
@@ -66,6 +72,5 @@ void Monster::OnCollisionExit(GameObject* Other)
 
 void Monster::TurnAround()
 {
-    //Transform_.Delta.X *= -1;
     Direction_ = (Direction_ & Direction::Right) == Direction::None ? Direction::Right : Direction::Left;
 }

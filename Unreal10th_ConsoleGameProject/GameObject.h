@@ -2,6 +2,7 @@
 #include "Common.h"
 #include <vector>
 #include <string>
+#include <unordered_set>
 
 /// <summary>
 /// 최상위 게임 오브젝트 추상 클래스
@@ -13,6 +14,8 @@ protected:
     Vector2 NextPosition_{};
     Collider Collider_{};
     CollisionLayer CollisionLayer_ = CollisionLayer::None;
+    std::unordered_set<GameObject*> CurrentCollisions;
+    std::unordered_set<GameObject*> PrevCollisions;
     bool bIsDestroyed_ = false; // 지연 삭제용 플래그
     float UpdatePeriod_ = 0.0f;
     float UpdateTimer_ = 0.0f;
@@ -31,8 +34,14 @@ public:
 
     inline void Destroy() { bIsDestroyed_ = true; }
     inline bool IsDestroyed() const { return bIsDestroyed_; }
+    inline void AddCurrentCollision(GameObject* Other) { CurrentCollisions.insert(Other); }
+    inline bool WasCollidedWith(GameObject* Other) { return PrevCollisions.count(Other) > 0; }
+    inline bool IsCollidedWith(GameObject* Other) { return CurrentCollisions.count(Other) > 0; }
+    void UpdateCollisions();
 
     inline CollisionLayer GetCollisionLayer() const { return CollisionLayer_; }
+    inline std::unordered_set<GameObject*> GetCurrentCollisions() const { return CurrentCollisions; }
+    inline std::unordered_set<GameObject*> GetPrevCollisions() const { return PrevCollisions; }
     inline Transform GetTransform() const { return Transform_; }
     inline Vector2 GetPosition() const { return Transform_.Position; }
     inline void SetPosition(Vector2 InPosition) { Transform_.Position = InPosition; }

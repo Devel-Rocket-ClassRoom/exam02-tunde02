@@ -40,13 +40,52 @@ void BaseScene::Update()
 
             if (CheckAABBCollision(ObjA, ObjB))
             {
-                ObjA->CancelMove();
-                ObjB->CancelMove();
+                //ObjA->CancelMove();
+                //ObjB->CancelMove();
 
-                ObjA->OnCollisionEnter(ObjB);
-                ObjB->OnCollisionEnter(ObjA);
+                //ObjA->OnCollisionEnter(ObjB);
+                //ObjB->OnCollisionEnter(ObjA);
+                ObjA->AddCurrentCollision(ObjB);
+                ObjB->AddCurrentCollision(ObjA);
             }
         }
+    }
+
+    for (auto& Obj : SceneObjects)
+    {
+        if (Obj->IsDestroyed())
+        {
+            continue;
+        }
+
+        for (auto& CurrentCollider : Obj->GetCurrentCollisions())
+        {
+            if (Obj->WasCollidedWith(CurrentCollider))
+            {
+                // 현재 충돌한 오브젝트가 PrevCollisions에 있다면
+                // 계속 충돌 중이라는 뜻이므로 OnCollisionStay()
+                Obj->OnCollisionStay(CurrentCollider);
+            }
+            else
+            {
+                // 현재 충돌한 오브젝트가 PrevCollisions에 없다면
+                // 이제 충돌하기 시작했다는 뜻이므로 OnCollisionEnter()
+                Obj->OnCollisionEnter(CurrentCollider);
+            }
+        }
+
+        for (auto& PrevCollider : Obj->GetPrevCollisions())
+        {
+            if (!Obj->IsCollidedWith(PrevCollider))
+            {
+                // 이전에 충돌했던 오브젝트가 CurrentCollisions에 없다면
+                // 충돌을 벗어났다는 뜻이므로 OnCollisionExit()
+                Obj->OnCollisionExit(PrevCollider);
+            }
+        }
+
+        // 오브젝트의 CurrentCollisions를 PrevCollisions로 갱신
+        Obj->UpdateCollisions();
     }
 
     // 3. 외곽 검사
@@ -58,7 +97,7 @@ void BaseScene::Update()
         }
 
         if (!(0 <= Obj->GetNextMinX() && Obj->GetNextMaxX() < Width_
-            && 0 <= Obj->GetNextMinY() && Obj->GetNextMaxY() < Height_))
+              && 0 <= Obj->GetNextMinY() && Obj->GetNextMaxY() < Height_))
         {
             Obj->CancelMove();
             Obj->OnCollisionEnter(nullptr);
