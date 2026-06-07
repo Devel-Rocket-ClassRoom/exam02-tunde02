@@ -5,6 +5,8 @@ class Monster : public GameObject
 {
 private:
     int CollisionCount = 0;
+    Direction Direction_ = Direction::None;
+
 public:
     Monster();
 
@@ -12,10 +14,7 @@ public:
     virtual void OnCollisionEnter(GameObject* Other) override;
     virtual void OnCollisionExit(GameObject* Other) override;
 
-    void TurnAround()
-    {
-        Transform_.Delta.X *= -1;
-    }
+    void TurnAround();
 
     //void TurnAround()
     //{

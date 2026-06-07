@@ -25,4 +25,6 @@ public:
 
     // 현재 씬의 오브젝트들 렌더링
     virtual void Render();
+
+    bool CheckAABBCollision(const GameObject* ObjA, const GameObject* ObjB);
 };

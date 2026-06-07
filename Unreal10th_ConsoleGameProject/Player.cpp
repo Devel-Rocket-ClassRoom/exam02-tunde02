@@ -3,10 +3,12 @@
 
 Player::Player()
 {
-    IsPlayer_ = true;
-
+    Transform_.Position = Vector2{ 5, 5 };
     Transform_.Width = 3;
     Transform_.Height = 3;
+
+    Collider_.Initialize(Transform_);
+    CollisionLayer_ = CollisionLayer::Player;
 
     RenderString_.reserve(Transform_.Width * Transform_.Height);
     for (int i = 0; i < Transform_.Height; i++)
@@ -18,12 +20,10 @@ Player::Player()
         }
         RenderString_.push_back(Str);
     }
-    Transform_.Position = Vector2{ 5, 5 };
 }
 
 void Player::Update()
 {
-    ShouldUpdated_ = true;
     Transform_.Delta.X = 0;
     Transform_.Delta.Y = 0;
 
@@ -44,6 +44,8 @@ void Player::Update()
     {
         Transform_.Delta.X = 1;
     }
+
+    NextPosition_ = Transform_.Position + Transform_.Delta;
 
     //Vector2 NextPosition{ Transform_.Position + Transform_.Delta };
     //if (0 <= NextPosition.X && NextPosition.X < 120
