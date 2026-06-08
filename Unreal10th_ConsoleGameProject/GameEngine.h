@@ -19,18 +19,19 @@ public:
     void Run();
     void Update();
     void Render();
+    void SetCursorPosition(int X, int Y);
 
     inline float GetFixedDeltaTime() const { return FixedDeltaTime; }
 
 private:
     const int TargetFPS = 60;
     float FixedDeltaTime = 0.0f;
+    int FrameMilliseconds = 0;
     BaseScene* currentScene = nullptr; // 현재 활성화된 씬 포인터
 
     // 싱글톤 핵심: 생성자를 private으로 감춰 외부 선언 및 new 차단
     GameEngine();
 
-    void SetCursorPosition(int X, int Y);
     void HideCursor();
     void SetConsoleSize(int Width, int Height);
 };

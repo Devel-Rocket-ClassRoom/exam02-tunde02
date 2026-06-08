@@ -6,6 +6,7 @@
 GameEngine::GameEngine()
 {
     FixedDeltaTime = 1.0f / TargetFPS;
+    FrameMilliseconds = FixedDeltaTime * 1000;
 }
 
 GameEngine::~GameEngine()
@@ -33,7 +34,7 @@ void GameEngine::Run()
         Update();
         Render();
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(16));
+        std::this_thread::sleep_for(std::chrono::milliseconds(FrameMilliseconds));
     }
 }
 

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Common.h"
 #include <vector>
 #include <string>
@@ -17,16 +17,22 @@ protected:
     std::unordered_set<GameObject*> CurrentCollisions;
     std::unordered_set<GameObject*> PrevCollisions;
     bool bIsDestroyed_ = false; // 지연 삭제용 플래그
+    bool bUseGravity_ = true;
     float UpdatePeriod_ = 0.0f;
     float UpdateTimer_ = 0.0f;
+    float GravityPeriod_ = 0.0f;
+    float GravityTimer_ = 0.0f;
     std::vector<std::wstring> RenderString_;
 
 public:
     virtual ~GameObject() = default;
 
     virtual void Update() = 0;
+    virtual void Update(int Gravity) = 0;
     virtual void ApplyMove();
     virtual void CancelMove();
+    virtual void CancelXMove();
+    virtual void CancelYMove();
     virtual void Render() {}
     virtual void OnCollisionEnter(GameObject* Other) {}
     virtual void OnCollisionStay(GameObject* Other) {}
@@ -34,6 +40,8 @@ public:
 
     inline void Destroy() { bIsDestroyed_ = true; }
     inline bool IsDestroyed() const { return bIsDestroyed_; }
+    inline bool GetUseGravity() const { return bUseGravity_; }
+    inline void SetUseGravity(bool InUseGravity) { bUseGravity_ = InUseGravity; }
     inline void AddCurrentCollision(GameObject* Other) { CurrentCollisions.insert(Other); }
     inline bool WasCollidedWith(GameObject* Other) { return PrevCollisions.count(Other) > 0; }
     inline bool IsCollidedWith(GameObject* Other) { return CurrentCollisions.count(Other) > 0; }

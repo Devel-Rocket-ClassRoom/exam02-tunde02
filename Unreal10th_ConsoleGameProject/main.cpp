@@ -20,8 +20,8 @@
 //      - 플레이어, 몬스터, 벽, 벽돌에 대한 정보(좌표, 크기, 문자열 등)가 들어 있는 파일
 //      - 가로로 긴 맵. 몬스터 여러 개
 //  [ ] 씬에서 씬으로 전환은 엔진.run()에서 씬의 멤버 속성 하나 최상단에서 확인하다가 바꼈으면 해당 enum 씬으로 전환
-//  [ ] 중력 적용
-//      - 땅 위에 있으면 중력의 영향을 받으면 안된다 -> Ground와 Wall 분리?
+//  [x] 중력 적용
+//      - 땅 위에 있으면 중력의 영향을 받으면 안된다
 //  [ ] 점프 구현
 //      - 일정 시간동안 중력의 영향을 받지 않도록?
 //  [ ] 카메라
@@ -42,7 +42,8 @@ int main()
     // Need to use std::wstring
     setlocale(LC_ALL, "");
 
-    GameEngine::Instance().ChangeScene(new Stage1Scene(120, 25));
+    // Camera Size : 170x37
+    GameEngine::Instance().ChangeScene(new Stage1Scene(170, 37));
     GameEngine::Instance().Run();
 
     return 0;

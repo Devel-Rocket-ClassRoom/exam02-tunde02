@@ -1,5 +1,7 @@
-#pragma once
+﻿#pragma once
 #include <type_traits>
+#include <vector>
+#include <string>
 
 struct Vector2
 {
@@ -42,6 +44,7 @@ enum class CollisionLayer
 {
     None,
     Player,
+    Ground,
     Wall,
     Monster,
     Flag
@@ -69,3 +72,14 @@ inline Direction operator|(Direction Left, Direction Right)
         static_cast<std::underlying_type_t<Direction>>(Left)
         | static_cast<std::underlying_type_t<Direction>>(Right));
 }
+
+class Logger
+{
+public:
+    static std::vector<std::string> Logs;
+
+    static void Log(const std::string InLog);
+    static void Log(int InRow, const std::string InLog);
+    static void AppendLog(int InRow, const std::string InLog);
+    static void PrintLog();
+};

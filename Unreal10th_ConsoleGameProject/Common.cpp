@@ -1,4 +1,6 @@
-#include "Common.h"
+﻿#include "Common.h"
+#include"GameEngine.h"
+#include <iostream>
 
 Vector2 Vector2::operator+(const Vector2& other) const
 {
@@ -47,4 +49,48 @@ void Collider::Initialize(const Transform& InTransform)
     Y = InTransform.Position.Y;
     Width = InTransform.Width;
     Height = InTransform.Height;
+}
+
+std::vector<std::string> Logger::Logs;
+
+void Logger::Log(const std::string InLog)
+{
+    Logs.push_back(InLog);
+    PrintLog();
+}
+
+void Logger::Log(int InRow, const std::string InLog)
+{
+    if (Logs.size() > InRow)
+    {
+        Logs[InRow] = InLog;
+    }
+    else
+    {
+        Logs.push_back(InLog);
+    }
+    PrintLog();
+}
+
+void Logger::AppendLog(int InRow, const std::string InLog)
+{
+    Logs[InRow] += InLog;
+    PrintLog();
+}
+
+void Logger::PrintLog()
+{
+    GameEngine::Instance().SetCursorPosition(0, 26);
+    for (int i = 0; i < 10; i++)
+    {
+        printf("          ");
+    }
+    GameEngine::Instance().SetCursorPosition(0, 26);
+
+    size_t Size = Logs.size();
+    printf("[From Logger] ");
+    for (size_t i = 0; i < Size; i++)
+    {
+        printf("%s\n", Logs[i].c_str());
+    }
 }

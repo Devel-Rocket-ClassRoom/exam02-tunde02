@@ -1,20 +1,16 @@
 ﻿#pragma once
 #include "GameObject.h"
 
-class Monster : public GameObject
+class Ground : public GameObject
 {
-private:
-    Direction Direction_ = Direction::None;
-
 public:
-    Monster();
-    Monster(int InX, int InY);
+    Ground();
+    Ground(int InX, int InY);
+    Ground(int InX, int InY, size_t InWidth, size_t InHeight);
 
     virtual void Update() override;
     virtual void Update(int Gravity) override;
     virtual void OnCollisionEnter(GameObject* Other) override;
-    virtual void OnCollisionStay(GameObject* Other) override;
     virtual void OnCollisionExit(GameObject* Other) override;
-
-    void TurnAround();
 };
+

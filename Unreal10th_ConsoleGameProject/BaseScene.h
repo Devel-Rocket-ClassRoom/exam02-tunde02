@@ -27,4 +27,5 @@ public:
     virtual void Render();
 
     bool CheckAABBCollision(const GameObject* ObjA, const GameObject* ObjB);
+    void CheckWallCollision(const GameObject* ObjA);
 };

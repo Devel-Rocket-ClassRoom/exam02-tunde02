@@ -1,4 +1,4 @@
-#include "BaseScene.h"
+﻿#include "BaseScene.h"
 
 BaseScene::BaseScene(int Width, int Height) : Width_(Width), Height_(Height) {}
 
@@ -20,7 +20,8 @@ void BaseScene::Update()
     {
         if (!Obj->IsDestroyed())
         {
-            Obj->Update();
+            //Obj->Update();
+            Obj->Update(1);
         }
     }
 
@@ -60,6 +61,11 @@ void BaseScene::Update()
 
         for (auto& CurrentCollider : Obj->GetCurrentCollisions())
         {
+            if (CurrentCollider == nullptr || CurrentCollider->IsDestroyed())
+            {
+                continue;
+            }
+
             if (Obj->WasCollidedWith(CurrentCollider))
             {
                 // 현재 충돌한 오브젝트가 PrevCollisions에 있다면
@@ -76,6 +82,11 @@ void BaseScene::Update()
 
         for (auto& PrevCollider : Obj->GetPrevCollisions())
         {
+            if (PrevCollider == nullptr || PrevCollider->IsDestroyed())
+            {
+                continue;
+            }
+
             if (!Obj->IsCollidedWith(PrevCollider))
             {
                 // 이전에 충돌했던 오브젝트가 CurrentCollisions에 없다면
@@ -96,11 +107,79 @@ void BaseScene::Update()
             continue;
         }
 
-        if (!(0 <= Obj->GetNextMinX() && Obj->GetNextMaxX() < Width_
-              && 0 <= Obj->GetNextMinY() && Obj->GetNextMaxY() < Height_))
+        //if (!(0 <= Obj->GetNextMinX() && Obj->GetNextMaxX() < Width_
+        //      && 0 <= Obj->GetNextMinY() && Obj->GetNextMaxY() < Height_))
+        //{
+        //    Obj->CancelMove();
+        //    Obj->OnCollisionEnter(nullptr);
+        //}
+
+        if (!(0 <= Obj->GetNextMinX() && Obj->GetNextMaxX() < Width_))
         {
-            Obj->CancelMove();
-            Obj->OnCollisionEnter(nullptr);
+            Obj->CancelXMove();
+            //Obj->OnCollisionEnter(nullptr);
+        }
+        if (!(0 <= Obj->GetNextMinY() && Obj->GetNextMaxY() < Height_))
+        {
+            Obj->CancelYMove();
+            //Obj->OnCollisionEnter(nullptr);
+        }
+    }
+
+    for (auto& Obj : SceneObjects)
+    {
+        if (Obj->IsDestroyed() || Obj->GetCollisionLayer() == CollisionLayer::Ground)
+        {
+            continue;
+        }
+
+        if (Obj->GetCollisionLayer() == CollisionLayer::Player)
+        {
+            int a = 0;
+        }
+
+        for (auto& CurrentCollider : Obj->GetPrevCollisions())
+        {
+            if (CurrentCollider->IsDestroyed() || CurrentCollider->GetCollisionLayer() != CollisionLayer::Ground)
+            {
+                continue;
+            }
+
+            if (Obj->GetTransform().Delta.X > 0)
+            {
+                if (Obj->GetNextMaxX() > CurrentCollider->GetNextMinX()
+                    && Obj->GetNextMinX() <= CurrentCollider->GetNextMaxX()
+                    && Obj->GetUseGravity())
+                {
+                    Obj->CancelXMove();
+                }
+            }
+            else if (Obj->GetTransform().Delta.X < 0)
+            {
+                if (Obj->GetNextMinX() < CurrentCollider->GetNextMaxX()
+                    && Obj->GetNextMaxX() >= CurrentCollider->GetNextMinX()
+                    && Obj->GetUseGravity())
+                {
+                    Obj->CancelXMove();
+                }
+            }
+
+            if (Obj->GetTransform().Delta.Y > 0)
+            {
+                if (Obj->GetNextMaxY() > CurrentCollider->GetNextMinY()
+                    && Obj->GetNextMinY() <= CurrentCollider->GetNextMaxY())
+                {
+                    Obj->CancelYMove();
+                }
+            }
+            else if (Obj->GetTransform().Delta.Y < 0)
+            {
+                if (Obj->GetNextMinY() < CurrentCollider->GetNextMaxY()
+                    && Obj->GetNextMaxY() >= CurrentCollider->GetNextMinY())
+                {
+                    Obj->CancelYMove();
+                }
+            }
         }
     }
 
@@ -141,7 +220,8 @@ void BaseScene::Render()
     {
         for (size_t j = 0; j < Width_; j++)
         {
-            Screen[i] += L"█";
+            //Screen[i] += L"█";
+            Screen[i] += L" ";
         }
     }
 
@@ -190,4 +270,9 @@ bool BaseScene::CheckAABBCollision(const GameObject* ObjA, const GameObject* Obj
     }
 
     return true;
+}
+
+void BaseScene::CheckWallCollision(const GameObject* ObjA)
+{
+
 }
