@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "GameObject.h"
 #include <vector>
 
@@ -9,7 +9,9 @@ class BaseScene
 {
 protected:
     // 각 씬은 자신만의 독립된 오브젝트 리스트를 관리함
+    std::vector<std::wstring> Screen;
     std::vector<GameObject*> SceneObjects;
+    GameObject* Player_ = nullptr;
     size_t Width_ = 0;
     size_t Height_ = 0;
 
@@ -26,6 +28,11 @@ public:
     // 현재 씬의 오브젝트들 렌더링
     virtual void Render();
 
+private:
     bool CheckAABBCollision(const GameObject* ObjA, const GameObject* ObjB);
-    void CheckWallCollision(const GameObject* ObjA);
+    void InitializeScreen(const std::wstring C = L" ");
+    void RenderSceneObjects();
+    void RenderStatus();
+    size_t GetTextStartX(const size_t UiStartX, const size_t Length) const;
+    void PrintScreen();
 };

@@ -37,13 +37,22 @@
 //  [ ] 마리오 첫 번째 스테이지 구현
 // 
 
+/*
+    "   _____ ____  ___   ______ ______  _  __"
+    "  / ___// __ \/   | / ____// ____/ | |/ /"
+    "  \__ \/ /_/ / /| |/ /    / __/    |   / "
+    " ___/ / ____/ ___ / /___ / /___   /   |  "
+    "/____/_/   /_/  |_\____//_____/  /_/|_|  "
+*/
+
 int main()
 {
     // Need to use std::wstring
     setlocale(LC_ALL, "");
 
     // Camera Size : 170x37
-    GameEngine::Instance().ChangeScene(new Stage1Scene(170, 37));
+    //GameEngine::Instance().ChangeScene(new Stage1Scene(170, 37));
+    GameEngine::Instance().ChangeScene(new Stage1Scene(83, 48));
     GameEngine::Instance().Run();
 
     return 0;

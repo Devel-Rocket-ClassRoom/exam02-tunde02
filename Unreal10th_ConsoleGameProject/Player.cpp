@@ -23,6 +23,8 @@ Player::Player()
         }
         RenderString_.push_back(Str);
     }
+
+    Hp = InitialHp;
 }
 
 void Player::Update()
@@ -49,14 +51,6 @@ void Player::Update()
     }
 
     NextPosition_ = Transform_.Position + Transform_.Delta;
-
-    //Vector2 NextPosition{ Transform_.Position + Transform_.Delta };
-    //if (0 <= NextPosition.X && NextPosition.X < 120
-    //    && 0 <= NextPosition.Y && NextPosition.Y < 29)
-    //{
-    //    NextPosition = Vector2{ Transform_.Position + Transform_.Delta };
-    //    Transform_.Position = NextPosition;
-    //}
 }
 
 void Player::Update(int Gravity)
