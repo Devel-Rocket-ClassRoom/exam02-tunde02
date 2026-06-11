@@ -1,6 +1,9 @@
 ﻿#include "BaseScene.h"
+#include "GameEngine.h"
 #include "Monster.h"
 #include "Bullet.h"
+
+#define USE_COLLISION_EXIT 0
 
 BaseScene::BaseScene(int Width, int Height) : Width_(Width), Height_(Height) {}
 
@@ -20,7 +23,8 @@ GameObject* BaseScene::Instantiate(GameObject* InGameObject, const Transform& In
     GameObject* NewGameObject = InGameObject;
     NewGameObject->Initialize(InTransform, InDelta);
 
-    SceneObjects.push_back(NewGameObject);
+    InstantiateRequests.push_back(InstantiateRequest{ NewGameObject, InTransform, InDelta });
+    //SceneObjects.push_back(NewGameObject);
 
     return NewGameObject;
 }
@@ -49,13 +53,36 @@ GameObject* BaseScene::Instantiate(const GameObjectType InGameObjectType, const 
         return nullptr;
     }
 
-    SceneObjects.push_back(NewGameObject);
+    InstantiateRequests.push_back(InstantiateRequest{ NewGameObject, InTransform, InDelta });
+    //SceneObjects.push_back(NewGameObject);
 
     return NewGameObject;
 }
 
 void BaseScene::Update()
 {
+    for (auto& Request : InstantiateRequests)
+    {
+        if (Request.Timer <= 0.0f)
+        {
+            SceneObjects.push_back(Request.Object);
+        }
+        else
+        {
+            Request.Timer -= GameEngine::Instance().GetFixedDeltaTime();
+        }
+    }
+
+    InstantiateRequests.erase(
+        std::remove_if(
+            InstantiateRequests.begin(),
+            InstantiateRequests.end(),
+            [](const InstantiateRequest& request) {
+                return request.Timer <= 0.0f;
+            }),
+        InstantiateRequests.end()
+    );
+
     // 1. 모든 오브젝트 로직 업데이트
     // TODO:
     // Instantiate()로 생성된 오브젝트들이 Update() 중간에 SceneObjects에 삽입되어
@@ -72,6 +99,7 @@ void BaseScene::Update()
     }
 
     // 2. 충돌 검사
+#if USE_COLLISION_EXIT == 1
     size_t SceneObjectsCount = SceneObjects.size();
     for (size_t i = 0; i < SceneObjectsCount; i++)
     {
@@ -87,8 +115,6 @@ void BaseScene::Update()
 
             if (CheckAABBCollision(ObjA, ObjB))
             {
-                //ObjA->OnCollisionEnter(ObjB);
-                //ObjB->OnCollisionEnter(ObjA);
                 ObjA->AddCurrentCollision(ObjB);
                 ObjB->AddCurrentCollision(ObjA);
             }
@@ -123,6 +149,8 @@ void BaseScene::Update()
             }
         }
 
+        // 이전 프레임에 파괴된 오브젝트가 PrevCollisions에 남아있을 수 있어
+        // 에러가 발생하는 중
         for (auto& PrevCollider : Obj->GetPrevCollisions())
         {
             if (PrevCollider == nullptr || PrevCollider->IsDestroyed())
@@ -141,6 +169,28 @@ void BaseScene::Update()
         // 오브젝트의 CurrentCollisions를 PrevCollisions로 갱신
         Obj->UpdateCollisions();
     }
+#else
+    size_t SceneObjectsCount = SceneObjects.size();
+    for (size_t i = 0; i < SceneObjectsCount; i++)
+    {
+        for (size_t j = i + 1; j < SceneObjectsCount; j++)
+        {
+            GameObject* ObjA = SceneObjects[i];
+            GameObject* ObjB = SceneObjects[j];
+
+            if (ObjA->IsDestroyed() || ObjB->IsDestroyed())
+            {
+                continue;
+            }
+
+            if (CheckAABBCollision(ObjA, ObjB))
+            {
+                ObjA->OnCollisionEnter(ObjB);
+                ObjB->OnCollisionEnter(ObjA);
+            }
+        }
+    }
+#endif
 
     // 3. 외곽 검사
     for (auto& Obj : SceneObjects)

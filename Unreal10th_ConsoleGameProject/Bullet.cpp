@@ -3,8 +3,8 @@
 
 Bullet::Bullet()
 {
-    Transform_.Width = 3;
-    Transform_.Height = 3;
+    Transform_.Width = 2;
+    Transform_.Height = 2;
     NextPosition_ = Transform_.Position;
 
     Collider_.Initialize(Transform_);
@@ -14,9 +14,8 @@ Bullet::Bullet()
 
     RenderString_.reserve(Transform_.Width * Transform_.Height);
     //RenderString_.push_back(L"░");
-    RenderString_.push_back(L"▒  ");
-    RenderString_.push_back(L"█  ");
-    RenderString_.push_back(L"█  ");
+    RenderString_.push_back(L"█ ");
+    RenderString_.push_back(L"▒ ");
 }
 
 Bullet::Bullet(int InX, int InY, int InDeltaX, int InDeltaY)
@@ -38,6 +37,23 @@ Bullet::Bullet(int InX, int InY, int InDeltaX, int InDeltaY)
     //RenderString_.push_back(L"░");
     RenderString_.push_back(L"▒ ");
     RenderString_.push_back(L" █");
+}
+
+Bullet::Bullet(const Transform& InTransform, const Vector2 InDelta)
+{
+    Transform_ = InTransform;
+    Delta_ = InDelta;
+    NextPosition_ = Transform_.Position;
+
+    Collider_.Initialize(Transform_);
+    CollisionLayer_ = CollisionLayer::Bullet;
+
+    UpdatePeriod_ = 0.04f;
+
+    RenderString_.reserve(Transform_.Width * Transform_.Height);
+    //RenderString_.push_back(L"░");
+    RenderString_.push_back(L"█ ");
+    RenderString_.push_back(L"▒ ");
 }
 
 void Bullet::Update()
@@ -64,8 +80,8 @@ void Bullet::OnCollisionEnter(GameObject* Other)
         return;
     }
 
-    //if (Other->GetCollisionLayer() == CollisionLayer::Wall)
-    //{
-    //    Destroy();
-    //}
+    if (Other->GetCollisionLayer() == CollisionLayer::Wall)
+    {
+        Destroy();
+    }
 }

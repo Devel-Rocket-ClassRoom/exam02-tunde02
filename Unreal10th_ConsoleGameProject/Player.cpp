@@ -55,8 +55,10 @@ void Player::Update()
     if (GetAsyncKeyState(VK_SPACE))
     {
         Transform BulletTransform = Transform_;
-        BulletTransform.Position.Y -= 5;
-        GameEngine::Instance().Instantiate(new Bullet(), BulletTransform,  Vector2{ 0, -1 });
+        BulletTransform.Position.Y -= 2;
+        BulletTransform.Width = 2;
+        BulletTransform.Height = 2;
+        GameEngine::Instance().Instantiate(new Bullet(), BulletTransform, Vector2{ 0, -1 });
     }
 
     NextPosition_ = Transform_.Position + Transform_.Delta;

@@ -8,9 +8,22 @@
 class BaseScene
 {
 protected:
+    struct InstantiateRequest
+    {
+        GameObject* Object = nullptr;
+        Transform ObjectTransform{};
+        Vector2 ObjectDelta{};
+        float Timer = 0.0f;
+
+        InstantiateRequest() = default;
+        InstantiateRequest(GameObject* InObject, const Transform& InObjectTransform, const Vector2& InObjectDelta, float InTimer = 0.0f) : Object(InObject), ObjectTransform(InObjectTransform), ObjectDelta(InObjectDelta), Timer(InTimer) {}
+        //InstantiateRequest(GameObject* InObject, const Transform& InObjectTransform, const Vector2& InObjectDelta) : Object(InObject), ObjectTransform(InObjectTransform), ObjectDelta(InObjectDelta) {}
+    };
+
     // 각 씬은 자신만의 독립된 오브젝트 리스트를 관리함
     std::vector<std::wstring> Screen;
     std::vector<GameObject*> SceneObjects;
+    std::vector<InstantiateRequest> InstantiateRequests;
     GameObject* Player_ = nullptr;
     size_t Width_ = 0;
     size_t Height_ = 0;

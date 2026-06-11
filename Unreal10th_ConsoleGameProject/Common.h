@@ -24,6 +24,8 @@ struct Transform
     size_t Height = 0;
 
     Transform() = default;
+
+    Transform& operator=(const Transform& other);
 };
 
 struct Collider

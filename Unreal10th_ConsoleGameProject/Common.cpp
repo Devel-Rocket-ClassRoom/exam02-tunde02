@@ -35,6 +35,21 @@ Vector2& Vector2::operator=(const Vector2& other)
     return *this;
 }
 
+Transform& Transform::operator=(const Transform& other)
+{
+    if (this == &other)
+    {
+        return *this;
+    }
+
+    this->Position = other.Position;
+    this->Delta = other.Delta;
+    this->Width = other.Width;
+    this->Height = other.Height;
+
+    return *this;
+}
+
 Collider::Collider(const Vector2& Position, size_t InWidth, size_t InHeight)
 {
     X = Position.X;
