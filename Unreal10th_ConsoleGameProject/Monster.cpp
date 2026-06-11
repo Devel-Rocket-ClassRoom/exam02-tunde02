@@ -30,10 +30,10 @@ Monster::Monster()
 Monster::Monster(int InX, int InY)
 {
     Transform_.Position = Vector2{ InX, InY };
-    Transform_.Delta = Vector2{ 1, 1 };
+    Transform_.Delta = Vector2{ 0, 0 };
     Transform_.Width = 2;
     Transform_.Height = 2;
-    Delta_ = Vector2{ 2, 1 };
+    Delta_ = Vector2{ 0, 0 };
     NextPosition_ = Transform_.Position;
     Collider_ = Collider(Transform_, CollisionLayer::Monster);
     Hp = 2;
@@ -65,26 +65,6 @@ void Monster::Update()
         //Transform_.Delta.X = (Direction_ & Direction::Right) == Direction::None ? -1 : 1;
         Transform_.Delta = Delta_;
         NextPosition_ = Transform_.Position + Transform_.Delta;
-    }
-}
-
-void Monster::Update(int Gravity)
-{
-    UpdateTimer_ += GameEngine::Instance().GetFixedDeltaTime();
-    if (UpdateTimer_ >= UpdatePeriod_)
-    {
-        UpdateTimer_ -= UpdatePeriod_;
-
-        Transform_.Delta.X = (Direction_ & Direction::Right) == Direction::None ? -1 : 1;
-        NextPosition_ = Transform_.Position + Transform_.Delta;
-    }
-
-    GravityTimer_ += GameEngine::Instance().GetFixedDeltaTime();
-    if (bUseGravity_ && GravityTimer_ >= GravityPeriod_)
-    {
-        GravityTimer_ -= GravityPeriod_;
-        NextPosition_.Y += Gravity;
-        Logger::Log(0, { "Monster's Delta Y : " + std::to_string(NextPosition_.Y) });
     }
 }
 
@@ -120,6 +100,5 @@ void Monster::OnCollisionExit(GameObject* Other)
 
 void Monster::TurnAround()
 {
-    //Direction_ = (Direction_ & Direction::Right) == Direction::None ? Direction::Right : Direction::Left;
     Delta_.X *= -1;
 }

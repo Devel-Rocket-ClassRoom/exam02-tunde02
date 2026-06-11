@@ -19,8 +19,8 @@ void Stage1Scene::Enter()
     SceneObjects.push_back(new Wall(60, 0, 1, 48));
     SceneObjects.push_back(new Wall(1, 0, 59, 1));
     SceneObjects.push_back(new Wall(1, 47, 59, 1));
-    SceneObjects.push_back(new Bullet(10, 3, 1, 1));
-    SceneObjects.push_back(new Bullet(10, 3, 2, 1));
+    SceneObjects.push_back(new Bullet(Transform{ 20, 1, 0, 1, 1, 2 }, Vector2{ 1, 1 }, Faction::Monster));
+    //SceneObjects.push_back(new Bullet(Transform{}, Vector2{}, Faction::Monster, 2));
     //SceneObjects.push_back(new Monster(2, 2));
     //SceneObjects.push_back(new Monster(4, 2));
     SceneObjects.push_back(new Monster(10, 2));

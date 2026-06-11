@@ -4,19 +4,21 @@
 class Player : public GameObject
 {
 private:
-    const int InitialHp = 3;
-    const int MaxHp = 5;
-    int Hp = 0;
-    float JumpGauge = 0.0f;
-    const int JumpDeltaYArray[10]{ -1, -1, -1, -2, -2, -2, -2, -1, -1, -1 };
+    const int InitialHp = 5;
+    const int MaxHp = 10;
+    const float PlayerShotDelay = 0.066f;
+
+    float ShotDelay = 0.0f;
+    BulletType CurrentBulletType = BulletType::Default;
 
 public:
     Player();
 
     virtual void Update() override;
-    virtual void Update(int Gravity) override;
     virtual void OnCollisionEnter(GameObject* Other) override;
     virtual void OnCollisionExit(GameObject* Other) override;
+
+    void FireBullet() const;
 
     inline int GetHp() const { return Hp; }
 };

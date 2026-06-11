@@ -66,6 +66,7 @@ struct Transform
     size_t Height = 0;
 
     Transform() = default;
+    Transform(int InX, int InY, int InDeltaX, int InDeltaY, size_t InWidth, size_t InHeight);
 
     Transform& operator=(const Transform& other);
 };

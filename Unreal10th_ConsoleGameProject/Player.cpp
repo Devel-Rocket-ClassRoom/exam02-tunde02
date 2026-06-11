@@ -9,34 +9,22 @@ Player::Player()
     Transform_.Width = 3;
     Transform_.Height = 3;
     Collider_ = Collider(Transform_, CollisionLayer::Player);
-    Hp = 10;
+    Hp = InitialHp;
     Damage = 1;
-
-    bUseGravity_ = false;
-
-    //RenderString_.reserve(Transform_.Width * Transform_.Height);
-    //for (int i = 0; i < Transform_.Height; i++)
-    //{
-    //    std::wstring Str{};
-    //    for (int j = 0; j < Transform_.Width; j++)
-    //    {
-    //        Str += L"O";
-    //        //Str += L"🔥";
-    //    }
-    //    RenderString_.push_back(Str);
-    //}
+    Faction_ = Faction::Player;
+    ShotDelay = PlayerShotDelay;
+    CurrentBulletType = BulletType::Default;
 
     RenderString_.push_back(L" ▲ ");
     RenderString_.push_back(L"║▇║");
     RenderString_.push_back(L"◢▇◣");
-
-    Hp = InitialHp;
 }
 
 void Player::Update()
 {
     Transform_.Delta.X = 0;
     Transform_.Delta.Y = 0;
+    ShotDelay -= GameEngine::Instance().GetFixedDeltaTime();
 
     if (GetAsyncKeyState(VK_UP)) // ↑
     {
@@ -58,69 +46,12 @@ void Player::Update()
 
     if (GetAsyncKeyState(VK_SPACE))
     {
-        Transform BulletTransform = Transform_;
-        BulletTransform.Position.Y -= 2;
-        BulletTransform.Width = 2;
-        BulletTransform.Height = 2;
-        GameEngine::Instance().Instantiate(new Bullet(), BulletTransform, Vector2{ 0, -1 });
-    }
-
-    NextPosition_ = Transform_.Position + Transform_.Delta;
-}
-
-void Player::Update(int Gravity)
-{
-    Transform_.Delta.X = 0;
-    Transform_.Delta.Y = 0;
-
-    if (GetAsyncKeyState(VK_UP)) // ↑
-    {
-        Transform_.Delta.Y = -1;
-    }
-    else if (GetAsyncKeyState(VK_DOWN)) // ↓
-    {
-        Transform_.Delta.Y = 1;
-    }
-
-    if (GetAsyncKeyState(VK_LEFT)) // ←
-    {
-        Transform_.Delta.X = -1;
-    }
-    else if (GetAsyncKeyState(VK_RIGHT)) // →
-    {
-        Transform_.Delta.X = 1;
-    }
-
-    // Gravity
-    if (bUseGravity_ && JumpGauge <= 0.0f + FLT_EPSILON)
-    {
-        Transform_.Delta.Y += Gravity;
-    }
-
-    // 점프
-    // space 꾹 -> 게이지가 오른다. 최대치가 있다
-    //      - 이전에 스페이스를 누르고 있었는지를 알아야함
-    //      - 공중에선 눌러도 점프할 수 없어야함
-    // IsReachedHigh - > 게이지가 최대치에 도달한 적이 있는가?
-    // deltaY[] -> (int)게이지 인덱스에 따라 다른 값
-    // 
-    if (GetAsyncKeyState(VK_SPACE))
-    {
-        //Transform_.Delta.Y = -2;
-
-        if (!bUseGravity_ && JumpGauge <= 0.0f + FLT_EPSILON)
+        if (ShotDelay <= 0.0f)
         {
-            //JumpGauge += GameEngine::Instance().GetFixedDeltaTime();
-            JumpGauge = 1.0f;
+            ShotDelay = PlayerShotDelay;
+            FireBullet();
         }
     }
-
-    if (JumpGauge >= 0.0f + FLT_EPSILON)
-    {
-        JumpGauge -= GameEngine::Instance().GetFixedDeltaTime() * 10;
-        Transform_.Delta.Y = JumpDeltaYArray[(int)(JumpGauge * 10) / 10];
-    }
-    Logger::Log(2, "JumpGauge : " + std::to_string(JumpGauge));
 
     NextPosition_ = Transform_.Position + Transform_.Delta;
 }
@@ -131,4 +62,18 @@ void Player::OnCollisionEnter(GameObject* Other)
 
 void Player::OnCollisionExit(GameObject* Other)
 {
+}
+
+void Player::FireBullet() const
+{
+    // 플레이어의 위치, 크기와 총알의 따른 크기에 따라 총알의 생성 위치 조절
+    // - OffsetX : Player.Width/2 - Bullet.Width/2
+    // - OffsetY : -Bullet.Height
+    Bullet* FiredBullet = new Bullet(Faction_, CurrentBulletType);
+    Vector2 BulletDelta{ 0, -1 };
+    Transform BulletTransform{};
+    BulletTransform.Position.X = Transform_.Position.X + Transform_.Delta.X + static_cast<int>((Transform_.Width / 2) - (FiredBullet->GetWidth() / 2));
+    BulletTransform.Position.Y = Transform_.Position.Y + Transform_.Delta.Y - static_cast<int>(FiredBullet->GetHeight());
+
+    GameEngine::Instance().Instantiate(FiredBullet, BulletTransform, BulletDelta);
 }

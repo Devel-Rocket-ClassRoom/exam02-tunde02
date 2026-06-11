@@ -14,7 +14,6 @@ public:
 
     // Engine Functions
     virtual void Update() = 0;
-    virtual void Update(int Gravity) = 0;
     virtual void ApplyMove();
     virtual void CancelMove();
     virtual void CancelXMove();

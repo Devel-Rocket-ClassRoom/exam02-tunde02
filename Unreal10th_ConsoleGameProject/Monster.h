@@ -11,7 +11,6 @@ public:
     Monster(int InX, int InY);
 
     virtual void Update() override;
-    virtual void Update(int Gravity) override;
     virtual void OnCollisionEnter(GameObject* Other) override;
     virtual void OnCollisionStay(GameObject* Other) override;
     virtual void OnCollisionExit(GameObject* Other) override;

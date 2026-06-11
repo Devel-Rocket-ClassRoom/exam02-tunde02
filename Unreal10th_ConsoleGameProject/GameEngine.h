@@ -26,7 +26,7 @@ public:
     inline float GetFixedDeltaTime() const { return FixedDeltaTime; }
 
 private:
-    const int TargetFPS = 60;
+    const int TargetFPS = 120;
     float FixedDeltaTime = 0.0f;
     int FrameMilliseconds = 0;
     BaseScene* currentScene = nullptr; // 현재 활성화된 씬 포인터

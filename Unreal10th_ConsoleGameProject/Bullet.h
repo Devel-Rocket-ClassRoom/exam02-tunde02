@@ -6,12 +6,14 @@ class Bullet : public GameObject
 {
 public:
     Bullet();
+    Bullet(Faction InFaction, BulletType InBulletType);
     Bullet(int InX, int InY, int InDeltaX, int InDeltaY);
-    Bullet(const Transform& InTransform, const Vector2 InDelta, const Faction InFaction, BulletType InBulletType = BulletType::Default);
+    Bullet(const Transform& InTransform, const Vector2 InDelta, Faction InFaction, BulletType InBulletType = BulletType::Default);
+    Bullet(const Vector2& InTransform, const Vector2& InDelta, Faction InFaction, BulletType InBulletType);
     //Bullet(const Transform& InTransform, const Vector2 InDelta, const Faction InFaction, int InHp = 1, BulletType InBulletType = BulletType::Default);
 
+    virtual void Initialize(const Transform InTransform, const Vector2 InDelta) override;
     virtual void Update() override;
-    virtual void Update(int Gravity) override;
     virtual void OnCollisionEnter(GameObject* Other) override;
 
     Vector2 GetBarrelPosition(BulletType InBulletType) const;
@@ -28,17 +30,10 @@ private:
         size_t Height;
         int Hp;
         int Damage;
-        int Speed;
+        float Speed;
         std::vector<std::wstring> RenderString;
         Vector2 BarrelOffset;
     };
-
-    //inline static const std::map<BulletType, std::vector<std::wstring>> BulletRenderStrings = {
-    //   { BulletType::Default, { L"█", L"▒" } },
-    //   { BulletType::Upgrade_1, { L"██", L"▒▒" } },
-    //   { BulletType::Upgrade_2, { L"███", L"▒▒▒" } },
-    //   { BulletType::Upgrade_3, { L"█ █ █", L"▓ ▓ ▓", L"▒ ▒ ▒" } }
-    //};
 
     inline static const std::unordered_map<BulletType, BulletSpec> BulletSpecs = {
         {
@@ -48,7 +43,7 @@ private:
                 2,
                 1,
                 1,
-                1,
+                4.0f,
                 { L"█", L"▒" },
                 { 0, 2 }
             }
@@ -60,7 +55,7 @@ private:
                 2,
                 1,
                 2,
-                1,
+                4.0f,
                 { L"██", L"▒▒" },
                 { 0, 2 }
             }
@@ -72,7 +67,7 @@ private:
                 2,
                 2,
                 3,
-                2,
+                4.0f,
                 { L"███", L"▒▒▒" },
                 { 0, 2 }
             }
@@ -84,7 +79,7 @@ private:
                 3,
                 3,
                 2,
-                3,
+                5.0f,
                 { L"█ █ █", L"▓ ▓ ▓", L"▒ ▒ ▒" },
                 { 0, 2 }
             }
