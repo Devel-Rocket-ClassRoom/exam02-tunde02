@@ -14,9 +14,12 @@ protected:
     Vector2 Delta_{};
     Vector2 NextPosition_{};
     Collider Collider_{};
-    CollisionLayer CollisionLayer_ = CollisionLayer::None;
+    Faction Faction_ = Faction::None;
+    //CollisionLayer CollisionLayer_ = CollisionLayer::None;
     std::unordered_set<GameObject*> CurrentCollisions;
     std::unordered_set<GameObject*> PrevCollisions;
+    int Hp = 0;
+    int Damage = 0;
     bool bIsDestroyed_ = false; // 지연 삭제용 플래그
     bool bUseGravity_ = true;
     float UpdatePeriod_ = 0.0f;
@@ -41,6 +44,7 @@ public:
 
     void Initialize(const Transform InTransform, const Vector2 InDelta);
     void UpdateCollisions();
+    void TakeDamage(int InDamage);
 
     inline void Destroy() { bIsDestroyed_ = true; }
     inline bool IsDestroyed() const { return bIsDestroyed_; }
@@ -50,7 +54,8 @@ public:
     inline bool WasCollidedWith(GameObject* Other) { return PrevCollisions.count(Other) > 0; }
     inline bool IsCollidedWith(GameObject* Other) { return CurrentCollisions.count(Other) > 0; }
 
-    inline CollisionLayer GetCollisionLayer() const { return CollisionLayer_; }
+    inline CollisionLayer GetCollisionLayer() const { return Collider_.Layer; }
+    inline Faction GetFaction() const { return Faction_; }
     inline std::unordered_set<GameObject*> GetCurrentCollisions() const { return CurrentCollisions; }
     inline std::unordered_set<GameObject*> GetPrevCollisions() const { return PrevCollisions; }
     inline Transform GetTransform() const { return Transform_; }
@@ -64,5 +69,9 @@ public:
     inline int GetNextMaxY() const { return NextPosition_.Y + static_cast<int>(Transform_.Height); }
     inline Vector2 GetDelta() const { return Delta_; }
     inline void SetDelta(Vector2 InDelta) { Delta_ = InDelta; }
+    inline int GetHp() const { return Hp; }
+    inline void SetHp(int InHp) { Hp = InHp; }
+    inline int GetDamage() const { return Damage; }
+    inline void SetDamage(int InDamage) { Damage = InDamage; }
     inline std::vector<std::wstring> GetRenderingVector() const { return RenderString_; }
 };

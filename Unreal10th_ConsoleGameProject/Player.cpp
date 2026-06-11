@@ -8,23 +8,27 @@ Player::Player()
     Transform_.Position = Vector2{ 5, 5 };
     Transform_.Width = 3;
     Transform_.Height = 3;
-
-    Collider_.Initialize(Transform_);
-    CollisionLayer_ = CollisionLayer::Player;
+    Collider_ = Collider(Transform_, CollisionLayer::Player);
+    Hp = 10;
+    Damage = 1;
 
     bUseGravity_ = false;
 
-    RenderString_.reserve(Transform_.Width * Transform_.Height);
-    for (int i = 0; i < Transform_.Height; i++)
-    {
-        std::wstring Str{};
-        for (int j = 0; j < Transform_.Width; j++)
-        {
-            Str += L"O";
-            //Str += L"🔥";
-        }
-        RenderString_.push_back(Str);
-    }
+    //RenderString_.reserve(Transform_.Width * Transform_.Height);
+    //for (int i = 0; i < Transform_.Height; i++)
+    //{
+    //    std::wstring Str{};
+    //    for (int j = 0; j < Transform_.Width; j++)
+    //    {
+    //        Str += L"O";
+    //        //Str += L"🔥";
+    //    }
+    //    RenderString_.push_back(Str);
+    //}
+
+    RenderString_.push_back(L" ▲ ");
+    RenderString_.push_back(L"║▇║");
+    RenderString_.push_back(L"◢▇◣");
 
     Hp = InitialHp;
 }

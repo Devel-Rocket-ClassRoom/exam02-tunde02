@@ -8,7 +8,7 @@ Bullet::Bullet()
     NextPosition_ = Transform_.Position;
 
     Collider_.Initialize(Transform_);
-    CollisionLayer_ = CollisionLayer::Bullet;
+    //CollisionLayer_ = CollisionLayer::Bullet;
 
     UpdatePeriod_ = 0.04f;
 
@@ -29,7 +29,8 @@ Bullet::Bullet(int InX, int InY, int InDeltaX, int InDeltaY)
     NextPosition_ = Transform_.Position;
 
     Collider_.Initialize(Transform_);
-    CollisionLayer_ = CollisionLayer::Bullet;
+    Collider_ = Collider();
+    //CollisionLayer_ = CollisionLayer::Bullet;
 
     UpdatePeriod_ = 0.04f;
 
@@ -39,14 +40,13 @@ Bullet::Bullet(int InX, int InY, int InDeltaX, int InDeltaY)
     RenderString_.push_back(L" █");
 }
 
-Bullet::Bullet(const Transform& InTransform, const Vector2 InDelta)
+Bullet::Bullet(const Transform& InTransform, const Vector2 InDelta, const Faction InFaction, int InHp)
 {
     Transform_ = InTransform;
     Delta_ = InDelta;
     NextPosition_ = Transform_.Position;
-
-    Collider_.Initialize(Transform_);
-    CollisionLayer_ = CollisionLayer::Bullet;
+    Collider_ = Collider(Transform_, CollisionLayer::Bullet);
+    Hp = InHp;
 
     UpdatePeriod_ = 0.04f;
 
@@ -54,6 +54,8 @@ Bullet::Bullet(const Transform& InTransform, const Vector2 InDelta)
     //RenderString_.push_back(L"░");
     RenderString_.push_back(L"█ ");
     RenderString_.push_back(L"▒ ");
+
+    Faction_ = InFaction;
 }
 
 void Bullet::Update()
@@ -75,13 +77,16 @@ void Bullet::Update(int Gravity)
 
 void Bullet::OnCollisionEnter(GameObject* Other)
 {
-    if (Other == nullptr)
+    if (Other == nullptr || (Other->GetCollisionLayer() == CollisionLayer::Bullet))
     {
         return;
     }
-
-    if (Other->GetCollisionLayer() == CollisionLayer::Wall)
+    else if (Other->GetCollisionLayer() == CollisionLayer::Wall)
     {
         Destroy();
+    }
+    else if (Other->GetFaction() != Faction_)
+    {
+        TakeDamage(Other->GetDamage());
     }
 }

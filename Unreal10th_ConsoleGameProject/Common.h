@@ -3,6 +3,40 @@
 #include <vector>
 #include <string>
 
+enum class GameObjectType
+{
+    None,
+    Player,
+    Monster,
+    Bullet
+};
+
+enum class CollisionLayer
+{
+    None,
+    Player,
+    Ground,
+    Wall,
+    Monster,
+    Bullet
+};
+
+enum class Direction
+{
+    None = 0,
+    Up = 1 << 0,
+    Down = 1 << 1,
+    Left = 1 << 2,
+    Right = 1 << 3
+};
+
+enum class Faction
+{
+    None = 1 << 0,
+    Player = 1 << 1,
+    Monster = 1 << 2
+};
+
 struct Vector2
 {
     int X = 0;
@@ -34,39 +68,13 @@ struct Collider
     int Y = 0;
     size_t Width = 0;
     size_t Height = 0;
+    CollisionLayer Layer = CollisionLayer::None;
 
     Collider() = default;
-    Collider(int InX, int InY, int InWidth, int InHeight) : X(InX), Y(InY), Width(InWidth), Height(InHeight) {}
-    Collider(const Vector2& Position, size_t InWidth, size_t InHeight);
+    Collider(const Vector2& InPosition, size_t InWidth, size_t InHeight, CollisionLayer InLayer);
+    Collider(const Transform& InTransform, CollisionLayer InLayer);
 
     void Initialize(const Transform& InTransform);
-};
-
-enum class GameObjectType
-{
-    None,
-    Player,
-    Monster,
-    Bullet
-};
-
-enum class CollisionLayer
-{
-    None,
-    Player,
-    Ground,
-    Wall,
-    Monster,
-    Bullet
-};
-
-enum class Direction
-{
-    None = 0,
-    Up = 1 << 0,
-    Down = 1 << 1,
-    Left = 1 << 2,
-    Right = 1 << 3
 };
 
 inline Direction operator&(Direction Left, Direction Right)

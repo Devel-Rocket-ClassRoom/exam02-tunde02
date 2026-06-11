@@ -200,23 +200,22 @@ void BaseScene::Update()
             continue;
         }
 
-        //if (!(0 <= Obj->GetNextMinX() && Obj->GetNextMaxX() < Width_
-        //      && 0 <= Obj->GetNextMinY() && Obj->GetNextMaxY() < Height_))
-        //{
-        //    Obj->CancelMove();
-        //    Obj->OnCollisionEnter(nullptr);
-        //}
+        if (!(0 <= Obj->GetNextMinX() && Obj->GetNextMaxX() < Width_
+              && 0 <= Obj->GetNextMinY() && Obj->GetNextMaxY() < Height_))
+        {
+            Obj->Destroy();
+        }
 
-        if (!(0 <= Obj->GetNextMinX() && Obj->GetNextMaxX() < Width_))
-        {
-            Obj->CancelXMove();
-            //Obj->OnCollisionEnter(nullptr);
-        }
-        if (!(0 <= Obj->GetNextMinY() && Obj->GetNextMaxY() < Height_))
-        {
-            Obj->CancelYMove();
-            //Obj->OnCollisionEnter(nullptr);
-        }
+        //if (!(0 <= Obj->GetNextMinX() && Obj->GetNextMaxX() < Width_))
+        //{
+        //    Obj->CancelXMove();
+        //    //Obj->OnCollisionEnter(nullptr);
+        //}
+        //if (!(0 <= Obj->GetNextMinY() && Obj->GetNextMaxY() < Height_))
+        //{
+        //    Obj->CancelYMove();
+        //    //Obj->OnCollisionEnter(nullptr);
+        //}
     }
 
     for (auto& Obj : SceneObjects)
