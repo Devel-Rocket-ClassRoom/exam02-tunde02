@@ -36,3 +36,13 @@ void GameObject::UpdateCollisions()
     PrevCollisions = std::move(CurrentCollisions);
     CurrentCollisions.clear();
 }
+
+void GameObject::TakeDamage(int InDamage)
+{
+    Hp -= InDamage;
+
+    if (Hp <= 0)
+    {
+        Destroy();
+    }
+}

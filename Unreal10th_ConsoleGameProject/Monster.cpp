@@ -10,9 +10,7 @@ Monster::Monster()
     Transform_.Width = 3;
     Transform_.Height = 3;
     NextPosition_ = Transform_.Position;
-
-    Collider_.Initialize(Transform_);
-    CollisionLayer_ = CollisionLayer::Monster;
+    Collider_ = Collider(Transform_, CollisionLayer::Monster);
 
     //UpdatePeriod_ = 0.016f;
     UpdatePeriod_ = 0.2f;
@@ -33,13 +31,12 @@ Monster::Monster()
 Monster::Monster(int InX, int InY)
 {
     Transform_.Position = Vector2{ InX, InY };
-    Transform_.Delta = Vector2{ 1, 0 };
+    Transform_.Delta = Vector2{ 1, 1 };
     Transform_.Width = 2;
     Transform_.Height = 2;
+    Delta_ = Vector2{ 2, 1 };
     NextPosition_ = Transform_.Position;
-
-    Collider_.Initialize(Transform_);
-    CollisionLayer_ = CollisionLayer::Monster;
+    Collider_ = Collider(Transform_, CollisionLayer::Monster);
 
     //UpdatePeriod_ = 0.016f;
     UpdatePeriod_ = 0.02f;
@@ -65,7 +62,8 @@ void Monster::Update()
     {
         UpdateTimer_ -= UpdatePeriod_;
 
-        Transform_.Delta.X = (Direction_ & Direction::Right) == Direction::None ? -1 : 1;
+        //Transform_.Delta.X = (Direction_ & Direction::Right) == Direction::None ? -1 : 1;
+        Transform_.Delta = Delta_;
         NextPosition_ = Transform_.Position + Transform_.Delta;
     }
 }
@@ -97,18 +95,18 @@ void Monster::OnCollisionEnter(GameObject* Other)
         return;
     }
 
-    if (Other->GetCollisionLayer() == CollisionLayer::Player)
+    else if (Other->GetCollisionLayer() == CollisionLayer::Wall)
     {
-        bIsDestroyed_ = true;
-    }
-    else if (Other->GetCollisionLayer() == CollisionLayer::Monster)
-    {
-        TurnAround();
-    }
-    else if (Other->GetCollisionLayer() == CollisionLayer::Ground
-             && Other->GetPosition().Y < Transform_.Position.Y)
-    {
-        TurnAround();
+        if (Other->GetPosition().Y > Transform_.Position.Y)
+        {
+            Destroy();
+        }
+        else
+        {
+            TurnAround();
+            Transform_.Delta = Delta_;
+            NextPosition_ = Transform_.Position + Transform_.Delta;
+        }
     }
 }
 
@@ -122,5 +120,6 @@ void Monster::OnCollisionExit(GameObject* Other)
 
 void Monster::TurnAround()
 {
-    Direction_ = (Direction_ & Direction::Right) == Direction::None ? Direction::Right : Direction::Left;
+    //Direction_ = (Direction_ & Direction::Right) == Direction::None ? Direction::Right : Direction::Left;
+    Delta_.X *= -1;
 }

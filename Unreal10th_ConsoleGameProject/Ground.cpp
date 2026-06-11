@@ -9,7 +9,7 @@ Ground::Ground()
     NextPosition_ = Transform_.Position;
 
     Collider_.Initialize(Transform_);
-    CollisionLayer_ = CollisionLayer::Ground;
+    //CollisionLayer_ = CollisionLayer::Ground;
 
     bUseGravity_ = false;
 
@@ -37,7 +37,7 @@ Ground::Ground(int InX, int InY, size_t InWidth, size_t InHeight)
     NextPosition_ = Transform_.Position;
 
     Collider_.Initialize(Transform_);
-    CollisionLayer_ = CollisionLayer::Ground;
+    //CollisionLayer_ = CollisionLayer::Ground;
 
     bUseGravity_ = false;
 
