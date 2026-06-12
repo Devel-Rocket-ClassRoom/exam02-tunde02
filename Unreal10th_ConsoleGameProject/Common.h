@@ -12,6 +12,14 @@ enum class GameObjectType
     Bullet
 };
 
+enum class MonsterType
+{
+    Default,
+    TripleShot,
+    Settled,
+    Boss
+};
+
 enum class BulletType
 {
     Default,

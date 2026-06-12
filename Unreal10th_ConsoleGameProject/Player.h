@@ -6,7 +6,7 @@ class Player : public GameObject
 private:
     const int InitialHp = 5;
     const int MaxHp = 10;
-    const float PlayerShotDelay = 0.033f;
+    const float PlayerShotDelay = 0.025f;
 
     float ShotDelay = 0.0f;
     BulletType CurrentBulletType = BulletType::Default;

@@ -18,18 +18,17 @@ BaseScene::~BaseScene()
     SceneObjects.clear();
 }
 
-GameObject* BaseScene::Instantiate(GameObject* InGameObject, const Transform& InTransform, const Vector2& InDelta)
+GameObject* BaseScene::Instantiate(GameObject* InGameObject, const Transform& InTransform, const Vector2& InDelta, float InTimer)
 {
     GameObject* NewGameObject = InGameObject;
     NewGameObject->Initialize(InTransform, InDelta);
 
-    InstantiateRequests.push_back(InstantiateRequest{ NewGameObject, InTransform, InDelta });
-    //SceneObjects.push_back(NewGameObject);
+    InstantiateRequests.push_back(InstantiateRequest{ NewGameObject, InTransform, InDelta, InTimer });
 
     return NewGameObject;
 }
 
-GameObject* BaseScene::Instantiate(const GameObjectType InGameObjectType, const Transform& InTransform, const Vector2& InDelta)
+GameObject* BaseScene::Instantiate(GameObjectType InGameObjectType, const Transform& InTransform, const Vector2& InDelta, float InTimer)
 {
     GameObject* NewGameObject = nullptr;
     switch (InGameObjectType)
@@ -53,7 +52,7 @@ GameObject* BaseScene::Instantiate(const GameObjectType InGameObjectType, const 
         return nullptr;
     }
 
-    InstantiateRequests.push_back(InstantiateRequest{ NewGameObject, InTransform, InDelta });
+    InstantiateRequests.push_back(InstantiateRequest{ NewGameObject, InTransform, InDelta, InTimer });
     //SceneObjects.push_back(NewGameObject);
 
     return NewGameObject;
@@ -63,13 +62,11 @@ void BaseScene::Update()
 {
     for (auto& Request : InstantiateRequests)
     {
+        Request.Timer -= GameEngine::Instance().GetFixedDeltaTime();
+
         if (Request.Timer <= 0.0f)
         {
             SceneObjects.push_back(Request.Object);
-        }
-        else
-        {
-            Request.Timer -= GameEngine::Instance().GetFixedDeltaTime();
         }
     }
 
@@ -205,15 +202,14 @@ void BaseScene::Update()
         {
             Obj->Destroy();
         }
+        if (!(0 <= Obj->GetNextMinY() && Obj->GetNextMaxY() < Height_))
+        {
+            Obj->Destroy();
+        }
 
         //if (!(0 <= Obj->GetNextMinX() && Obj->GetNextMaxX() < Width_))
         //{
         //    Obj->CancelXMove();
-        //    //Obj->OnCollisionEnter(nullptr);
-        //}
-        //if (!(0 <= Obj->GetNextMinY() && Obj->GetNextMaxY() < Height_))
-        //{
-        //    Obj->CancelYMove();
         //    //Obj->OnCollisionEnter(nullptr);
         //}
     }
@@ -302,7 +298,11 @@ void BaseScene::RenderSceneObjects()
         {
             for (size_t j = 0; j < obj->GetWidth(); j++)
             {
-                Screen[obj->GetPosition().Y + i][obj->GetPosition().X + j] = obj->GetRenderingVector()[i][j];
+                if (Screen[obj->GetPosition().Y + i][obj->GetPosition().X + j] == L' '
+                    && obj->GetRenderingVector()[i][j] != L' ')
+                {
+                    Screen[obj->GetPosition().Y + i][obj->GetPosition().X + j] = obj->GetRenderingVector()[i][j];
+                }
             }
         }
     }
@@ -316,11 +316,11 @@ void BaseScene::RenderStatus()
     for (size_t i = StatusStartX; i < Width_; i++)
     {
         Screen[0][i] = L'█';
-        Screen[Height_ - 1][i] = L'█';
+        Screen[Height_ - 2][i] = L'█';
     }
 
     // 오른쪽 테두리
-    for (size_t i = 0; i < Height_; i++)
+    for (size_t i = 1; i < Height_ - 2; i++)
     {
         Screen[i][Width_ - 1] = L'█';
     }

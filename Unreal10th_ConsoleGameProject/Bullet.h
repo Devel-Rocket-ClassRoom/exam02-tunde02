@@ -7,17 +7,14 @@ class Bullet : public GameObject
 public:
     Bullet();
     Bullet(Faction InFaction, BulletType InBulletType);
-    Bullet(int InX, int InY, int InDeltaX, int InDeltaY);
-    Bullet(const Transform& InTransform, const Vector2 InDelta, Faction InFaction, BulletType InBulletType = BulletType::Default);
-    Bullet(const Vector2& InTransform, const Vector2& InDelta, Faction InFaction, BulletType InBulletType);
+    //Bullet(int InX, int InY, int InDeltaX, int InDeltaY);
+    //Bullet(const Transform& InTransform, const Vector2& InDelta, Faction InFaction, BulletType InBulletType = BulletType::Default);
+    //Bullet(const Vector2& InTransform, const Vector2& InDelta, Faction InFaction, BulletType InBulletType);
     //Bullet(const Transform& InTransform, const Vector2 InDelta, const Faction InFaction, int InHp = 1, BulletType InBulletType = BulletType::Default);
 
-    virtual void Initialize(const Transform InTransform, const Vector2 InDelta) override;
+    virtual void Initialize(const Transform& InTransform, const Vector2& InDelta) override;
     virtual void Update() override;
     virtual void OnCollisionEnter(GameObject* Other) override;
-
-    Vector2 GetBarrelPosition(BulletType InBulletType) const;
-    void InitializeBullet();
 
     inline Faction GetFaction() const { return Faction_; }
     inline void SetFaction(Faction InFaction) { Faction_ = InFaction; }
@@ -43,7 +40,7 @@ private:
                 2,
                 1,
                 1,
-                4.0f,
+                5.0f,
                 { L"█", L"▒" },
                 { 0, 2 }
             }
@@ -55,7 +52,7 @@ private:
                 2,
                 1,
                 2,
-                4.0f,
+                5.0f,
                 { L"██", L"▒▒" },
                 { 0, 2 }
             }
@@ -67,7 +64,7 @@ private:
                 2,
                 2,
                 3,
-                4.0f,
+                5.0f,
                 { L"███", L"▒▒▒" },
                 { 0, 2 }
             }
@@ -79,7 +76,7 @@ private:
                 3,
                 3,
                 2,
-                5.0f,
+                6.0f,
                 { L"█ █ █", L"▓ ▓ ▓", L"▒ ▒ ▒" },
                 { 0, 2 }
             }

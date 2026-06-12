@@ -12,6 +12,9 @@ class GameObject
 public:
     virtual ~GameObject() = default;
 
+    // Instantiate Function
+    virtual void Initialize(const Transform& InTransform, const Vector2& InDelta);
+
     // Engine Functions
     virtual void Update() = 0;
     virtual void ApplyMove();
@@ -23,9 +26,6 @@ public:
     virtual void OnCollisionStay(GameObject* Other) {}
     virtual void OnCollisionExit(GameObject* Other) {}
 
-    // Instantiate Function
-    virtual void Initialize(const Transform InTransform, const Vector2 InDelta);
-
     void UpdateCollisions();
     void TakeDamage(int InDamage);
 
@@ -35,7 +35,7 @@ public:
     inline bool WasCollidedWith(GameObject* Other) { return PrevCollisions.count(Other) > 0; }
     inline bool IsCollidedWith(GameObject* Other) { return CurrentCollisions.count(Other) > 0; }
 
-    inline CollisionLayer GetCollisionLayer() const { return Collider_.Layer; }
+    inline CollisionLayer GetCollisionLayer() const { return CollisionLayer_; }
     inline Faction GetFaction() const { return Faction_; }
     inline std::unordered_set<GameObject*> GetCurrentCollisions() const { return CurrentCollisions; }
     inline std::unordered_set<GameObject*> GetPrevCollisions() const { return PrevCollisions; }
@@ -64,7 +64,8 @@ protected:
     Vector2 Delta_{};
     Direction DeltaDirection = Direction::None;
     Vector2 NextPosition_{};
-    Collider Collider_{};
+    CollisionLayer CollisionLayer_ = CollisionLayer::None;
+    //Collider Collider_{};
     Faction Faction_ = Faction::None;
     std::unordered_set<GameObject*> CurrentCollisions;
     std::unordered_set<GameObject*> PrevCollisions;
@@ -76,5 +77,5 @@ protected:
     float UpdateTimer_ = 0.0f;
     std::vector<std::wstring> RenderString_;
 
-    inline void CalcNextPosition() { NextPosition_ = Transform_.Position + CalcDeltaVector(DeltaDirection); }
+    inline void UpdateNextPosition() { NextPosition_ = Transform_.Position + CalcDeltaVector(DeltaDirection); }
 };

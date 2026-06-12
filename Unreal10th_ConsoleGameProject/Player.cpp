@@ -5,10 +5,10 @@
 
 Player::Player()
 {
-    Transform_.Position = Vector2{ 5, 5 };
+    Transform_.Position = Vector2{ 30, 40 };
     Transform_.Width = 3;
     Transform_.Height = 3;
-    Collider_ = Collider(Transform_, CollisionLayer::Player);
+    CollisionLayer_ = CollisionLayer::Player;
     Hp = InitialHp;
     Damage = 1;
     Faction_ = Faction::Player;
@@ -75,7 +75,7 @@ void Player::Update()
         }
     }
 
-    CalcNextPosition();
+    UpdateNextPosition();
 }
 
 void Player::OnCollisionEnter(GameObject* Other)

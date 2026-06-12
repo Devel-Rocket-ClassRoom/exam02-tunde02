@@ -24,7 +24,7 @@ void GameObject::CancelYMove()
     Transform_.Delta.Y = 0;
 }
 
-void GameObject::Initialize(const Transform InTransform, const Vector2 InDelta)
+void GameObject::Initialize(const Transform& InTransform, const Vector2& InDelta)
 {
     Transform_ = InTransform;
     Delta_ = InDelta;
