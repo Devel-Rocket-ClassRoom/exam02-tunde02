@@ -22,9 +22,12 @@ Player::Player()
 
 void Player::Update()
 {
+    ShotDelay -= GameEngine::Instance().GetFixedDeltaTime();
+    DeltaDirection = Direction::None;
+
+#if 0
     Transform_.Delta.X = 0;
     Transform_.Delta.Y = 0;
-    ShotDelay -= GameEngine::Instance().GetFixedDeltaTime();
 
     if (GetAsyncKeyState(VK_UP)) // ↑
     {
@@ -43,6 +46,25 @@ void Player::Update()
     {
         Transform_.Delta.X = 1;
     }
+#endif
+
+    if (GetAsyncKeyState(VK_UP)) // ↑
+    {
+        AddDeltaDirection(Direction::Up);
+    }
+    else if (GetAsyncKeyState(VK_DOWN)) // ↓
+    {
+        AddDeltaDirection(Direction::Down);
+    }
+
+    if (GetAsyncKeyState(VK_LEFT)) // ←
+    {
+        AddDeltaDirection(Direction::Left);
+    }
+    else if (GetAsyncKeyState(VK_RIGHT)) // →
+    {
+        AddDeltaDirection(Direction::Right);
+    }
 
     if (GetAsyncKeyState(VK_SPACE))
     {
@@ -53,7 +75,7 @@ void Player::Update()
         }
     }
 
-    NextPosition_ = Transform_.Position + Transform_.Delta;
+    CalcNextPosition();
 }
 
 void Player::OnCollisionEnter(GameObject* Other)

@@ -3,9 +3,6 @@
 
 class Monster : public GameObject
 {
-private:
-    Direction Direction_ = Direction::None;
-
 public:
     Monster();
     Monster(int InX, int InY);

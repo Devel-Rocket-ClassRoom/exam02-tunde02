@@ -51,8 +51,8 @@ public:
     inline Vector2 GetDelta() const { return Delta_; }
     inline void SetDelta(Vector2 InDelta) { Delta_ = InDelta; }
     inline Direction GetDeltaDirection() const { return DeltaDirection; }
-    inline void AddDeltaDirection(Direction InDirection) { DeltaDirection |= InDirection; }
-    inline void SubDeltaDirection(Direction InDirection) { DeltaDirection &= ~InDirection; }
+    inline void AddDeltaDirection(Direction InDirection) { DeltaDirection = DeltaDirection | InDirection; }
+    inline void SubDeltaDirection(Direction InDirection) { DeltaDirection = DeltaDirection & ~InDirection; }
     inline int GetHp() const { return Hp; }
     inline void SetHp(int InHp) { Hp = InHp; }
     inline int GetDamage() const { return Damage; }
@@ -75,4 +75,6 @@ protected:
     float UpdatePeriod_ = 0.0f;
     float UpdateTimer_ = 0.0f;
     std::vector<std::wstring> RenderString_;
+
+    inline void CalcNextPosition() { NextPosition_ = Transform_.Position + CalcDeltaVector(DeltaDirection); }
 };

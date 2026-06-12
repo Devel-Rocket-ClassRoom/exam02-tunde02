@@ -1,4 +1,5 @@
 ﻿#pragma once
+//#include "BitFlags.h" // 다른 라이브러리의 비트 플래그 연산까지 덮어써버리는 것 같음
 #include <type_traits>
 #include <vector>
 #include <string>
@@ -98,6 +99,40 @@ inline Direction operator|(Direction Left, Direction Right)
     return static_cast<Direction>(
         static_cast<std::underlying_type_t<Direction>>(Left)
         | static_cast<std::underlying_type_t<Direction>>(Right));
+}
+
+inline Direction operator~(Direction InDirection)
+{
+    return static_cast<Direction>(~static_cast<std::underlying_type_t<Direction>>(InDirection));
+}
+
+inline bool HasFlag(Direction InDirection, Direction Flag)
+{
+    return (static_cast<std::underlying_type_t<Direction>>(InDirection) & static_cast<std::underlying_type_t<Direction>>(Flag)) != 0;
+}
+
+inline Vector2 CalcDeltaVector(Direction InDirection)
+{
+    Vector2 Delta{};
+
+    if (HasFlag(InDirection, Direction::Up))
+    {
+        Delta = Delta + Vector2{ 0, -1 };
+    }
+    if (HasFlag(InDirection, Direction::Down))
+    {
+        Delta = Delta + Vector2{ 0, 1 };
+    }
+    if (HasFlag(InDirection, Direction::Left))
+    {
+        Delta = Delta + Vector2{ -1, 0 };
+    }
+    if (HasFlag(InDirection, Direction::Right))
+    {
+        Delta = Delta + Vector2{ 1, 0 };
+    }
+
+    return Delta;
 }
 
 class Logger

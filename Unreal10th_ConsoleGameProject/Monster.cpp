@@ -30,17 +30,18 @@ Monster::Monster()
 Monster::Monster(int InX, int InY)
 {
     Transform_.Position = Vector2{ InX, InY };
-    Transform_.Delta = Vector2{ 0, 0 };
+    //Transform_.Delta = Vector2{ 0, 0 };
+    DeltaDirection = Direction::Down | Direction::Left;
     Transform_.Width = 2;
     Transform_.Height = 2;
     Delta_ = Vector2{ 0, 0 };
     NextPosition_ = Transform_.Position;
     Collider_ = Collider(Transform_, CollisionLayer::Monster);
     Hp = 2;
-    Speed = 5.0f;
+    Speed = 1.0f;
 
     //UpdatePeriod_ = 0.016f;
-    UpdatePeriod_ = 0.05f / Speed;
+    UpdatePeriod_ = 0.02f / Speed;
 
     RenderString_.reserve(Transform_.Width * Transform_.Height);
     for (int i = 0; i < Transform_.Height; i++)
@@ -62,9 +63,21 @@ void Monster::Update()
     {
         UpdateTimer_ -= UpdatePeriod_;
 
+#if 0
         //Transform_.Delta.X = (Direction_ & Direction::Right) == Direction::None ? -1 : 1;
-        Transform_.Delta = Delta_;
-        NextPosition_ = Transform_.Position + Transform_.Delta;
+        //Transform_.Delta = Delta_;
+        Transform_.Position.fX += Delta_.fX;
+        Transform_.Position.fY += Delta_.fY;
+        Transform_.Position.X = Transform_.Position.fX;
+        Transform_.Position.Y = Transform_.Position.fY;
+        //NextPosition_.fX += Transform_.Position.fX + Delta_.fX;
+        //NextPosition_.fY += Transform_.Position.fY + Delta_.fY;
+        NextPosition_ = Transform_.Position;
+        //NextPosition_.X = NextPosition_.fX;
+        //NextPosition_.Y = NextPosition_.fY;
+        //printf("(%d, %d)\n", NextPosition_.X, NextPosition_.Y);
+#endif
+        CalcNextPosition();
     }
 }
 
@@ -84,8 +97,9 @@ void Monster::OnCollisionEnter(GameObject* Other)
         else
         {
             TurnAround();
-            Transform_.Delta = Delta_;
-            NextPosition_ = Transform_.Position + Transform_.Delta;
+            CalcNextPosition();
+            //Transform_.Delta = Delta_;
+            //NextPosition_ = Transform_.Position + Transform_.Delta;
         }
     }
 }
@@ -100,5 +114,12 @@ void Monster::OnCollisionExit(GameObject* Other)
 
 void Monster::TurnAround()
 {
+    bool isRight = HasFlag(DeltaDirection, Direction::Right);
+
+    SubDeltaDirection(isRight ? Direction::Right : Direction::Left);
+    AddDeltaDirection(isRight ? Direction::Left : Direction::Right);
+
+#if 0
     Delta_.X *= -1;
+#endif
 }
