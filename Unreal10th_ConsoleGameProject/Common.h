@@ -23,7 +23,6 @@ enum class CollisionLayer
 {
     None,
     Player,
-    Ground,
     Wall,
     Monster,
     Bullet

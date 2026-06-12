@@ -14,7 +14,6 @@ Monster::Monster()
 
     //UpdatePeriod_ = 0.016f;
     UpdatePeriod_ = 0.2f;
-    GravityPeriod_ = 0.04f;
 
     RenderString_.reserve(Transform_.Width * Transform_.Height);
     for (int i = 0; i < Transform_.Height; i++)
@@ -37,10 +36,11 @@ Monster::Monster(int InX, int InY)
     Delta_ = Vector2{ 2, 1 };
     NextPosition_ = Transform_.Position;
     Collider_ = Collider(Transform_, CollisionLayer::Monster);
+    Hp = 2;
+    Speed = 5.0f;
 
     //UpdatePeriod_ = 0.016f;
-    UpdatePeriod_ = 0.02f;
-    GravityPeriod_ = 0.03f;
+    UpdatePeriod_ = 0.05f / Speed;
 
     RenderString_.reserve(Transform_.Width * Transform_.Height);
     for (int i = 0; i < Transform_.Height; i++)
