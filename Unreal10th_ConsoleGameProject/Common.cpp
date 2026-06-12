@@ -22,6 +22,16 @@ Vector2 Vector2::operator-(const Vector2& other) const
     return Result;
 }
 
+Vector2 Vector2::operator*(const int multiplier) const
+{
+    Vector2 Result{};
+
+    Result.X = this->X * multiplier;
+    Result.Y = this->Y * multiplier;
+
+    return Result;;
+}
+
 Vector2& Vector2::operator=(const Vector2& other)
 {
     if (this == &other)

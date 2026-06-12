@@ -11,6 +11,14 @@ enum class GameObjectType
     Bullet
 };
 
+enum class BulletType
+{
+    Default,
+    Upgrade_1,
+    Upgrade_2,
+    Upgrade_3
+};
+
 enum class CollisionLayer
 {
     None,
@@ -47,6 +55,7 @@ struct Vector2
 
     Vector2 operator+(const Vector2& other) const;
     Vector2 operator-(const Vector2& other) const;
+    Vector2 operator*(const int multiplier) const;
     Vector2& operator=(const Vector2& other);
 };
 

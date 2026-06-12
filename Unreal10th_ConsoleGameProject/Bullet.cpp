@@ -40,22 +40,51 @@ Bullet::Bullet(int InX, int InY, int InDeltaX, int InDeltaY)
     RenderString_.push_back(L" █");
 }
 
-Bullet::Bullet(const Transform& InTransform, const Vector2 InDelta, const Faction InFaction, int InHp)
+Bullet::Bullet(const Transform& InTransform, const Vector2 InDelta, const Faction InFaction, BulletType InBulletType)
 {
-    Transform_ = InTransform;
+    const BulletSpec Spec = BulletSpecs.at(BulletType_);
+
+    Transform_.Position = InTransform.Position + Spec.BarrelOffset;
+    Transform_.Width = Spec.Width;
+    Transform_.Height = Spec.Height;
     Delta_ = InDelta;
+    UpdatePeriod_ = 0.5f / Spec.Speed;
     NextPosition_ = Transform_.Position;
-    Collider_ = Collider(Transform_, CollisionLayer::Bullet);
-    Hp = InHp;
+    Hp = Spec.Hp;
+    Damage = Spec.Damage;
+    RenderString_ = Spec.RenderString;
+}
 
-    UpdatePeriod_ = 0.04f;
+//Bullet::Bullet(const Transform& InTransform, const Vector2 InDelta, const Faction InFaction, int InHp, BulletType InBulletType)
+//{
+//    Transform_ = InTransform;
+//    Delta_ = InDelta;
+//    NextPosition_ = Transform_.Position;
+//    Collider_ = Collider(Transform_, CollisionLayer::Bullet);
+//    Hp = InHp;
+//    Damage = 2;
+//    BulletType_ = BulletType::Default;
+//
+//    UpdatePeriod_ = 0.04f;
+//
+//    RenderString_.reserve(Transform_.Width * Transform_.Height);
+//    //RenderString_.push_back(L"░");
+//    RenderString_.push_back(L"▒");
+//    RenderString_.push_back(L"█");
+//
+//    Faction_ = InFaction;
+//}
 
-    RenderString_.reserve(Transform_.Width * Transform_.Height);
-    //RenderString_.push_back(L"░");
-    RenderString_.push_back(L"█ ");
-    RenderString_.push_back(L"▒ ");
+void Bullet::Initialize(const Transform InTransform, const Vector2 InDelta)
+{
+    const BulletSpec Spec = BulletSpecs.at(BulletType_);
 
-    Faction_ = InFaction;
+    Transform_.Position = InTransform.Position + Spec.BarrelOffset;
+    Delta_ = InDelta * Spec.Speed;
+    NextPosition_ = Transform_.Position;
+    Hp = Spec.Hp;
+    Damage = Spec.Damage;
+    RenderString_ = Spec.RenderString;
 }
 
 void Bullet::Update()
@@ -88,5 +117,42 @@ void Bullet::OnCollisionEnter(GameObject* Other)
     else if (Other->GetFaction() != Faction_)
     {
         TakeDamage(Other->GetDamage());
+    }
+}
+
+Vector2 Bullet::GetBarrelPosition(BulletType InBulletType) const
+{
+
+    switch (InBulletType)
+    {
+        case BulletType::Upgrade_1:
+            break;
+        case BulletType::Upgrade_2:
+            break;
+        case BulletType::Upgrade_3:
+            break;
+        case BulletType::Default:
+
+        default:
+            break;
+    }
+
+    return Vector2();
+}
+
+void Bullet::InitializeBullet()
+{
+    switch (BulletType_)
+    {
+        case BulletType::Upgrade_1:
+            break;
+        case BulletType::Upgrade_2:
+            break;
+        case BulletType::Upgrade_3:
+            break;
+        case BulletType::Default:
+
+        default:
+            break;
     }
 }
