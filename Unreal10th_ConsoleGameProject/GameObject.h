@@ -18,6 +18,9 @@ public:
     // Engine Functions
     virtual void Update() = 0;
     virtual void ApplyMove();
+    virtual void ApplyMove(float InX, float InY);
+    virtual void ApplyXMove(float InX);
+    virtual void ApplyYMove(float InY);
     virtual void CancelMove();
     virtual void CancelXMove();
     virtual void CancelYMove();
@@ -44,12 +47,14 @@ public:
     inline void SetPosition(Vector2 InPosition) { Transform_.Position = InPosition; }
     inline size_t GetWidth() const { return Transform_.Width; }
     inline size_t GetHeight() const { return Transform_.Height; }
-    inline int GetNextMinX() const { return NextPosition_.X; }
-    inline int GetNextMaxX() const { return NextPosition_.X + static_cast<int>(Transform_.Width); }
-    inline int GetNextMinY() const { return NextPosition_.Y; }
-    inline int GetNextMaxY() const { return NextPosition_.Y + static_cast<int>(Transform_.Height); }
+    inline int GetNextMinX() const { return static_cast<int>(NextPosition_.X); }
+    inline int GetNextMaxX() const { return static_cast<int>(NextPosition_.X) + static_cast<int>(Transform_.Width); }
+    inline int GetNextMinY() const { return static_cast<int>(NextPosition_.Y); }
+    inline int GetNextMaxY() const { return static_cast<int>(NextPosition_.Y) + static_cast<int>(Transform_.Height); }
     inline Vector2 GetDelta() const { return Delta_; }
     inline void SetDelta(Vector2 InDelta) { Delta_ = InDelta; }
+    inline float GetSpeed() const { return Speed; }
+    inline void SetSpeed(float InSpeed) { Speed = InSpeed; }
     inline Direction GetDeltaDirection() const { return DeltaDirection; }
     inline void AddDeltaDirection(Direction InDirection) { DeltaDirection = DeltaDirection | InDirection; }
     inline void SubDeltaDirection(Direction InDirection) { DeltaDirection = DeltaDirection & ~InDirection; }
@@ -77,5 +82,20 @@ protected:
     float UpdateTimer_ = 0.0f;
     std::vector<std::wstring> RenderString_;
 
-    inline void UpdateNextPosition() { NextPosition_ = Transform_.Position + CalcDeltaVector(DeltaDirection); }
+    inline void UpdateNextPosition() { NextPosition_ = Transform_.Position + Delta_; }
+    inline void NormalizeDelta()
+    {
+        float len = std::sqrt(Delta_.X * Delta_.X + Delta_.Y * Delta_.Y);
+
+        // 길이가 0인 경우(정지 상태) 나누기 에러 방지
+        if (len == 0.0f)
+        {
+            Delta_.X = 0.0f;
+            Delta_.Y = 0.0f;
+            return;
+        }
+
+        Delta_.X /= len;
+        Delta_.Y /= len;
+    }
 };

@@ -8,6 +8,7 @@ public:
     Monster();
     Monster(int InX, int InY);
     Monster(MonsterType InMonsterType);
+    Monster(MonsterType InMonsterType, Vector2 InDelta);
 
     virtual void Initialize(const Transform& InTransform, const Vector2& InDelta) override;
     virtual void Update() override;
@@ -37,7 +38,7 @@ private:
                 3,
                 3,
                 1,
-                0.6f,
+                1.0f,
                 {
                     L"█ ░ █",
                     L"▓███▓",

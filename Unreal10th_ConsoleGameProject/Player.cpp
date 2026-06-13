@@ -11,6 +11,7 @@ Player::Player()
     CollisionLayer_ = CollisionLayer::Player;
     Hp = InitialHp;
     Damage = 1;
+    Speed = 2.0f;
     Faction_ = Faction::Player;
     ShotDelay = PlayerShotDelay;
     CurrentBulletType = BulletType::Default;
@@ -25,29 +26,29 @@ void Player::Update()
     ShotDelay -= GameEngine::Instance().GetFixedDeltaTime();
     DeltaDirection = Direction::None;
 
-#if 0
-    Transform_.Delta.X = 0;
-    Transform_.Delta.Y = 0;
+    Delta_.X = 0.0f;
+    Delta_.Y = 0.0f;
 
     if (GetAsyncKeyState(VK_UP)) // ↑
     {
-        Transform_.Delta.Y = -1;
+        Delta_.Y = -2.0f;
     }
     else if (GetAsyncKeyState(VK_DOWN)) // ↓
     {
-        Transform_.Delta.Y = 1;
+        Delta_.Y = 2.0f;
     }
 
     if (GetAsyncKeyState(VK_LEFT)) // ←
     {
-        Transform_.Delta.X = -1;
+        Delta_.X = -2.0f;
     }
     else if (GetAsyncKeyState(VK_RIGHT)) // →
     {
-        Transform_.Delta.X = 1;
+        Delta_.X = 2.0f;
     }
-#endif
+    NormalizeDelta();
 
+#if 0
     if (GetAsyncKeyState(VK_UP)) // ↑
     {
         AddDeltaDirection(Direction::Up);
@@ -65,6 +66,7 @@ void Player::Update()
     {
         AddDeltaDirection(Direction::Right);
     }
+#endif
 
     if (GetAsyncKeyState(VK_SPACE))
     {
@@ -80,11 +82,38 @@ void Player::Update()
 
 void Player::OnCollisionEnter(GameObject* Other)
 {
+    if (Other->GetCollisionLayer() == CollisionLayer::Wall)
+    {
+        if (Delta_.X > 0.0f && Transform_.Position.X > Other->GetPosition().X)
+        {
+
+        }
+        else if (Delta_.X < 0.0f && Transform_.Position.X < Other->GetPosition().X)
+        {
+
+        }
+    }
 }
 
 void Player::OnCollisionExit(GameObject* Other)
 {
 }
+
+//void Player::NormalizeDelta()
+//{
+//    float len = std::sqrt(Delta_.X * Delta_.X + Delta_.Y * Delta_.Y);
+//
+//    // 길이가 0인 경우(정지 상태) 나누기 에러 방지
+//    if (len == 0.0f)
+//    {
+//        Delta_.X = 0.0f;
+//        Delta_.Y = 0.0f;
+//        return;
+//    }
+//
+//    Delta_.X /= len;
+//    Delta_.Y /= len;
+//}
 
 void Player::FireBullet() const
 {
@@ -94,8 +123,10 @@ void Player::FireBullet() const
     Bullet* FiredBullet = new Bullet(Faction_, CurrentBulletType);
     Vector2 BulletDelta{ 0, -1 };
     Transform BulletTransform{};
-    BulletTransform.Position.X = Transform_.Position.X + Transform_.Delta.X + static_cast<int>((Transform_.Width / 2) - (FiredBullet->GetWidth() / 2));
-    BulletTransform.Position.Y = Transform_.Position.Y + Transform_.Delta.Y - static_cast<int>(FiredBullet->GetHeight());
+    auto [RoundedPosX, RoundedPosY] = Transform_.Position.ToRoundInt();
+    auto [RoundedDeltaX, RoundedDeltaY] = Delta_.ToRoundInt();
+    BulletTransform.Position.X = static_cast<float>(RoundedPosX + RoundedDeltaX + static_cast<int>((Transform_.Width / 2) - (FiredBullet->GetWidth() / 2)));
+    BulletTransform.Position.Y = static_cast<float>(RoundedPosY + RoundedDeltaY - static_cast<int>(FiredBullet->GetHeight()));
 
     GameEngine::Instance().Instantiate(FiredBullet, BulletTransform, BulletDelta);
 }

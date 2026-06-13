@@ -3,6 +3,7 @@
 #include <type_traits>
 #include <vector>
 #include <string>
+#include <cmath>
 
 enum class GameObjectType
 {
@@ -55,44 +56,43 @@ enum class Faction
 
 struct Vector2
 {
-    int X = 0;
-    int Y = 0;
+    float X = 0.0f;
+    float Y = 0.0f;
 
     Vector2() = default;
-    Vector2(int InX, int InY) : X(InX), Y(InY) {}
+    Vector2(float InX, float InY) : X(InX), Y(InY) {}
 
     Vector2 operator+(const Vector2& other) const;
     Vector2 operator-(const Vector2& other) const;
     Vector2 operator*(const int multiplier) const;
     Vector2& operator=(const Vector2& other);
+
+    //std::pair<int, int> ToRoundInt() const { return { static_cast<int>(X), static_cast<int>(Y) }; }
+    std::pair<int, int> ToRoundInt() const { return { static_cast<int>(std::round(X)), static_cast<int>(std::round(Y)) }; }
 };
 
 struct Transform
 {
     Vector2 Position{};
-    Vector2 Delta{};
     size_t Width = 0;
     size_t Height = 0;
 
     Transform() = default;
-    Transform(int InX, int InY, int InDeltaX, int InDeltaY, size_t InWidth, size_t InHeight);
+    Transform(const Vector2& InPosition, size_t InWidth, size_t InHeight) : Position(InPosition), Width(InWidth), Height(InHeight) {}
+    Transform(float InX, float InY, size_t InWidth, size_t InHeight);
 
     Transform& operator=(const Transform& other);
 };
 
 struct Collider
 {
-    int X = 0;
-    int Y = 0;
     size_t Width = 0;
     size_t Height = 0;
     CollisionLayer Layer = CollisionLayer::None;
 
     Collider() = default;
-    Collider(const Vector2& InPosition, size_t InWidth, size_t InHeight, CollisionLayer InLayer);
+    Collider(size_t InWidth, size_t InHeight, CollisionLayer InLayer);
     Collider(const Transform& InTransform, CollisionLayer InLayer);
-
-    void Initialize(const Transform& InTransform);
 };
 
 inline Direction operator&(Direction Left, Direction Right)

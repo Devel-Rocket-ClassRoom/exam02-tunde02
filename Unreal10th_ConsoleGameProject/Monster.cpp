@@ -64,10 +64,28 @@ Monster::Monster(MonsterType InMonsterType)
     RenderString_ = Spec.RenderString;
 }
 
+Monster::Monster(MonsterType InMonsterType, Vector2 InDelta)
+{
+    MonsterType_ = InMonsterType;
+    MonsterSpec Spec = MonsterSpecs.at(MonsterType_);
+
+    Transform_.Width = Spec.Width;
+    Transform_.Height = Spec.Height;
+    Delta_ = InDelta;
+    NormalizeDelta();
+    CollisionLayer_ = CollisionLayer::Monster;
+    Hp = Spec.Hp;
+    Damage = Spec.Damage;
+    Speed = Spec.Speed;
+    UpdatePeriod_ = GameEngine::Instance().GetFixedDeltaTime() / Speed;
+    RenderString_ = Spec.RenderString;
+}
+
 void Monster::Initialize(const Transform& InTransform, const Vector2& InDelta)
 {
     Transform_.Position = InTransform.Position;
     Delta_ = InDelta;
+    NormalizeDelta();
     NextPosition_ = Transform_.Position;
 }
 
@@ -103,7 +121,10 @@ void Monster::OnCollisionEnter(GameObject* Other)
     {
         return;
     }
-    else if (Other->GetCollisionLayer() == CollisionLayer::Wall)
+
+    CollisionLayer cc = Other->GetCollisionLayer();
+
+    if (Other->GetCollisionLayer() == CollisionLayer::Wall)
     {
         if (Other->GetPosition().Y > Transform_.Position.Y)
         {
@@ -123,14 +144,14 @@ void Monster::OnCollisionEnter(GameObject* Other)
 
 void Monster::TurnAround()
 {
+#if 0
     bool isRight = HasFlag(DeltaDirection, Direction::Right);
 
     SubDeltaDirection(isRight ? Direction::Right : Direction::Left);
     AddDeltaDirection(isRight ? Direction::Left : Direction::Right);
-
-#if 0
-    Delta_.X *= -1;
 #endif
+
+    Delta_.X *= -1.0f;
 }
 
 void Monster::FireBullet() const

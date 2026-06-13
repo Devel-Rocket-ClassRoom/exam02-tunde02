@@ -45,7 +45,10 @@ public:
     virtual void Render();
 
 private:
+    void TryXMove(GameObject* ObjA, size_t i);
+    void TryYMove(GameObject* ObjA, size_t i);
     bool CheckAABBCollision(const GameObject* ObjA, const GameObject* ObjB);
+    bool CheckAABBCollision(int ObjAPosX, int ObjAPosY, size_t ObjAWidth, size_t ObjAHeight, int ObjBPosX, int ObjBPosY, size_t ObjBWidth, size_t ObjBHeight);
     void InitializeScreen(const std::wstring C = L" ");
     void RenderSceneObjects();
     void RenderStatus();

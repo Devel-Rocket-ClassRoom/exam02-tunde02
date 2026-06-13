@@ -45,10 +45,9 @@ Vector2& Vector2::operator=(const Vector2& other)
     return *this;
 }
 
-Transform::Transform(int InX, int InY, int InDeltaX, int InDeltaY, size_t InWidth, size_t InHeight)
+Transform::Transform(float InX, float InY, size_t InWidth, size_t InHeight)
 {
     Position = Vector2{ InX, InY };
-    Delta = Vector2{ InDeltaX, InDeltaY };
     Width = InWidth;
     Height = InHeight;
 }
@@ -61,17 +60,14 @@ Transform& Transform::operator=(const Transform& other)
     }
 
     this->Position = other.Position;
-    this->Delta = other.Delta;
     this->Width = other.Width;
     this->Height = other.Height;
 
     return *this;
 }
 
-Collider::Collider(const Vector2& InPosition, size_t InWidth, size_t InHeight, CollisionLayer InLayer)
+Collider::Collider(size_t InWidth, size_t InHeight, CollisionLayer InLayer)
 {
-    X = InPosition.X;
-    Y = InPosition.Y;
     Width = InWidth;
     Height = InHeight;
     Layer = InLayer;
@@ -79,19 +75,9 @@ Collider::Collider(const Vector2& InPosition, size_t InWidth, size_t InHeight, C
 
 Collider::Collider(const Transform& InTransform, CollisionLayer InLayer)
 {
-    X = InTransform.Position.X;
-    Y = InTransform.Position.Y;
     Width = InTransform.Width;
     Height = InTransform.Height;
     Layer = InLayer;
-}
-
-void Collider::Initialize(const Transform& InTransform)
-{
-    X = InTransform.Position.X;
-    Y = InTransform.Position.Y;
-    Width = InTransform.Width;
-    Height = InTransform.Height;
 }
 
 std::vector<std::string> Logger::Logs;

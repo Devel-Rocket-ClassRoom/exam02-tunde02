@@ -89,6 +89,22 @@ void BaseScene::Update()
         }
     }
 
+    // 충돌 검사, 외곽 검사, 1칸씩 이동을 동시에
+    size_t SceneObjectsSize = SceneObjects.size();
+    for (size_t i = 0; i < SceneObjectsSize; i++)
+    {
+        GameObject* ObjA = SceneObjects[i];
+
+        if (ObjA->IsDestroyed())
+        {
+            continue;
+        }
+
+        TryXMove(ObjA, i);
+        TryYMove(ObjA, i);
+    }
+
+    /*
     // 2. 충돌 검사
 #if USE_COLLISION_EXIT == 1
     size_t SceneObjectsCount = SceneObjects.size();
@@ -191,13 +207,6 @@ void BaseScene::Update()
             continue;
         }
 
-        //if (!(0 <= Obj->GetNextMinX() && Obj->GetNextMaxX() < Width_
-        //      && 0 <= Obj->GetNextMinY() && Obj->GetNextMaxY() < Height_))
-        //{
-        //    Obj->CancelMove();
-        //    Obj->OnCollisionEnter(nullptr);
-        //}
-
         if (!(0 <= Obj->GetNextMinX() && Obj->GetNextMaxX() < Width_))
         {
             Obj->Destroy();
@@ -206,12 +215,6 @@ void BaseScene::Update()
         {
             Obj->Destroy();
         }
-
-        //if (!(0 <= Obj->GetNextMinX() && Obj->GetNextMaxX() < Width_))
-        //{
-        //    Obj->CancelXMove();
-        //    //Obj->OnCollisionEnter(nullptr);
-        //}
     }
 
     // 4. 이동 적용
@@ -222,6 +225,7 @@ void BaseScene::Update()
             obj->ApplyMove();
         }
     }
+    */
 
     // 5. 지연 삭제 (Update 루프가 완전히 끝난 후 플래그가 켜진 오브젝트 일괄 제거)
     for (auto& Obj : SceneObjects)
@@ -252,6 +256,125 @@ void BaseScene::Render()
     PrintScreen();
 }
 
+void BaseScene::TryXMove(GameObject* ObjA, size_t i)
+{
+    auto [ObjAPosX, ObjAPosY] = ObjA->GetPosition().ToRoundInt();
+    float PredictedX = ObjA->GetDelta().X * ObjA->GetSpeed();
+
+    if (PredictedX == 0.0f)
+    {
+        return;
+    }
+
+    float StepX = ObjA->GetDelta().X;
+    float SumX = 0.0f;
+
+    while (std::abs(SumX) < std::abs(PredictedX))
+    {
+        // 마지막 루프에서 남은 거리가 StepX보다 작다면, 남은 만큼만 이동하도록 보정
+        if (std::abs(PredictedX - SumX) < std::abs(StepX))
+        {
+            StepX = PredictedX - SumX;
+        }
+
+        // 이번 루프에서 이동할 누적치 갱신
+        SumX += StepX;
+
+        int RoundedNextX = static_cast<int>(std::round(ObjAPosX + SumX));
+
+        // 외곽 검사
+        if (!(0 <= RoundedNextX && RoundedNextX + ObjA->GetWidth() < Width_))
+        {
+            ObjA->Destroy();
+            return;
+        }
+
+        // 충돌 검사
+        size_t SceneObjectsSize = SceneObjects.size();
+        for (size_t j = 0; j < SceneObjectsSize; j++)
+        {
+            if (SceneObjects[j]->IsDestroyed() || SceneObjects[j] == ObjA)
+            {
+                continue;
+            }
+
+            GameObject* ObjB = SceneObjects[j];
+            auto [ObjBPosX, ObjBPosY] = ObjB->GetPosition().ToRoundInt();
+
+            if (ObjA->GetCollisionLayer() != ObjB->GetCollisionLayer()
+                && CheckAABBCollision(RoundedNextX, ObjAPosY, ObjA->GetWidth(), ObjA->GetHeight(),
+                                      ObjBPosX, ObjBPosY, ObjB->GetWidth(), ObjB->GetHeight()))
+            {
+                ObjA->OnCollisionEnter(ObjB);
+                ObjB->OnCollisionEnter(ObjA);
+                return;
+            }
+        }
+
+        ObjA->ApplyXMove(StepX);
+    }
+}
+
+
+void BaseScene::TryYMove(GameObject* ObjA, size_t i)
+{
+    auto [ObjAPosX, ObjAPosY] = ObjA->GetPosition().ToRoundInt();
+    float PredictedY = ObjA->GetDelta().Y * ObjA->GetSpeed();
+
+    if (PredictedY == 0.0f)
+    {
+        return;
+    }
+
+    float StepY = ObjA->GetDelta().Y;
+    float SumY = 0.0f;
+
+    while (std::abs(SumY) < std::abs(PredictedY))
+    {
+        // 마지막 루프에서 남은 거리가 StepY보다 작다면, 남은 만큼만 이동하도록 보정
+        if (std::abs(PredictedY - SumY) < std::abs(StepY))
+        {
+            StepY = PredictedY - SumY;
+        }
+
+        // 이번 루프에서 이동할 누적치 갱신
+        SumY += StepY;
+
+        int RoundedNextY = static_cast<int>(std::round(ObjAPosY + SumY));
+
+        // 외곽 검사
+        if (!(0 <= RoundedNextY && RoundedNextY + ObjA->GetHeight() < Height_))
+        {
+            ObjA->Destroy();
+            return;
+        }
+
+        // 충돌 검사
+        size_t SceneObjectsSize = SceneObjects.size();
+        for (size_t j = 0; j < SceneObjectsSize; j++)
+        {
+            if (SceneObjects[j]->IsDestroyed() || SceneObjects[j] == ObjA)
+            {
+                continue;
+            }
+
+            GameObject* ObjB = SceneObjects[j];
+            auto [ObjBPosX, ObjBPosY] = ObjB->GetPosition().ToRoundInt();
+
+            if (ObjA->GetCollisionLayer() != ObjB->GetCollisionLayer()
+                && CheckAABBCollision(ObjAPosX, RoundedNextY, ObjA->GetWidth(), ObjA->GetHeight(),
+                                      ObjBPosX, ObjBPosY, ObjB->GetWidth(), ObjB->GetHeight()))
+            {
+                ObjA->OnCollisionEnter(ObjB);
+                ObjB->OnCollisionEnter(ObjA);
+                return;
+            }
+        }
+
+        ObjA->ApplyYMove(StepY);
+    }
+}
+
 bool BaseScene::CheckAABBCollision(const GameObject* ObjA, const GameObject* ObjB)
 {
     if (ObjA->GetNextMaxX() <= ObjB->GetNextMinX())
@@ -270,6 +393,31 @@ bool BaseScene::CheckAABBCollision(const GameObject* ObjA, const GameObject* Obj
     }
 
     if (ObjB->GetNextMaxY() <= ObjA->GetNextMinY())
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool BaseScene::CheckAABBCollision(int ObjAPosX, int ObjAPosY, size_t ObjAWidth, size_t ObjAHeight, int ObjBPosX, int ObjBPosY, size_t ObjBWidth, size_t ObjBHeight)
+{
+    if (ObjAPosX + ObjAWidth <= ObjBPosX)
+    {
+        return false;
+    }
+
+    if (ObjBPosX + ObjBWidth <= ObjAPosX)
+    {
+        return false;
+    }
+
+    if (ObjAPosY + ObjAHeight <= ObjBPosY)
+    {
+        return false;
+    }
+
+    if (ObjBPosY + ObjBHeight <= ObjAPosY)
     {
         return false;
     }
@@ -298,10 +446,11 @@ void BaseScene::RenderSceneObjects()
         {
             for (size_t j = 0; j < obj->GetWidth(); j++)
             {
-                if (Screen[obj->GetPosition().Y + i][obj->GetPosition().X + j] == L' '
+                auto [PositionX, PositionY] = obj->GetPosition().ToRoundInt();
+                if (Screen[PositionY + i][PositionX + j] == L' '
                     && obj->GetRenderingVector()[i][j] != L' ')
                 {
-                    Screen[obj->GetPosition().Y + i][obj->GetPosition().X + j] = obj->GetRenderingVector()[i][j];
+                    Screen[PositionY + i][PositionX + j] = obj->GetRenderingVector()[i][j];
                 }
             }
         }

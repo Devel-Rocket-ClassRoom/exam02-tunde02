@@ -14,20 +14,21 @@ void Stage1Scene::Enter()
 
     // Stage 1 전용 오브젝트 배치
 
-    SceneObjects.push_back(new Wall(0, 0, 1, 47)); // Left
-    SceneObjects.push_back(new Wall(60, 0, 1, 47)); // Right
-    SceneObjects.push_back(new Wall(1, 0, 59, 1)); // Top
-    SceneObjects.push_back(new Wall(1, 46, 59, 1)); // Bottom
+    SceneObjects.push_back(new Wall(0.0f, 0.0f, 1, 47)); // Left
+    SceneObjects.push_back(new Wall(60.0f, 0.0f, 1, 47)); // Right
+    SceneObjects.push_back(new Wall(1.0f, 0.0f, 59, 1)); // Top
+    SceneObjects.push_back(new Wall(1.0f, 46.0f, 59, 1)); // Bottom
     //SceneObjects.push_back(new Bullet(Transform{}, Vector2{}, Faction::Monster, 2));
     //SceneObjects.push_back(new Monster(2, 2));
     //SceneObjects.push_back(new Monster(4, 2));
     // 
     //SceneObjects.push_back(new Monster(10, 2));
-    Transform t{ 5, 2, 0, 0, 7, 5 };
-    for (int i = 0; i < 1; i++)
+
+    Transform t{ 5.0f, 2.0f, 0, 0 };
+    for (int i = 0; i < 10; i++)
     {
         //Instantiate(new Monster(10, 2), t, {}, static_cast<float>(i) / 30);
-        Instantiate(new Monster(MonsterType::TripleShot), t, {}, static_cast<float>(i) / 30);
+        Instantiate(new Monster(MonsterType::Default), t, { -2.5f, 0.2f }, static_cast<float>(i) / 20);
     }
     Player_ = new Player();
     SceneObjects.push_back(Player_);

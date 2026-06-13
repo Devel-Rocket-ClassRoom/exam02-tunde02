@@ -135,9 +135,7 @@ void Bullet::Update()
     {
         UpdateTimer_ -= UpdatePeriod_;
 
-
-        Transform_.Delta = Delta_;
-        NextPosition_ = Transform_.Position + Transform_.Delta;
+        UpdateNextPosition();
     }
 }
 

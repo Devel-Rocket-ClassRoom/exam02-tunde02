@@ -3,25 +3,41 @@
 void GameObject::ApplyMove()
 {
     Transform_.Position = NextPosition_;
-    Transform_.Delta = Vector2(0, 0);
+    //Transform_.Delta = Vector2(0, 0);
+}
+
+void GameObject::ApplyMove(float InX, float InY)
+{
+    Transform_.Position.X = InX;
+    Transform_.Position.Y = InY;
+}
+
+void GameObject::ApplyXMove(float InX)
+{
+    Transform_.Position.X += InX;
+}
+
+void GameObject::ApplyYMove(float InY)
+{
+    Transform_.Position.Y += InY;
 }
 
 void GameObject::CancelMove()
 {
     NextPosition_ = Transform_.Position;
-    Transform_.Delta = Vector2(0, 0);
+    //Transform_.Delta = Vector2(0, 0);
 }
 
 void GameObject::CancelXMove()
 {
     NextPosition_.X = Transform_.Position.X;
-    Transform_.Delta.X = 0;
+    //Transform_.Delta.X = 0;
 }
 
 void GameObject::CancelYMove()
 {
     NextPosition_.Y = Transform_.Position.Y;
-    Transform_.Delta.Y = 0;
+    //Transform_.Delta.Y = 0;
 }
 
 void GameObject::Initialize(const Transform& InTransform, const Vector2& InDelta)
