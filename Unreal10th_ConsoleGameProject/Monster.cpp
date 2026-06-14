@@ -1,5 +1,6 @@
 ﻿#include "Monster.h"
 #include "GameEngine.h"
+#include "Bullet.h"
 
 Monster::Monster()
 {
@@ -13,6 +14,7 @@ Monster::Monster()
     Damage = Spec.Damage;
     Speed = Spec.Speed;
     UpdatePeriod_ = GameEngine::Instance().GetFixedDeltaTime() / Speed;
+    BulletType_ = Spec.BulletType_;
     RenderString_ = Spec.RenderString;
 }
 
@@ -61,6 +63,7 @@ Monster::Monster(MonsterType InMonsterType)
     Damage = Spec.Damage;
     Speed = Spec.Speed;
     UpdatePeriod_ = GameEngine::Instance().GetFixedDeltaTime() / Speed;
+    BulletType_ = Spec.BulletType_;
     RenderString_ = Spec.RenderString;
 }
 
@@ -78,6 +81,7 @@ Monster::Monster(MonsterType InMonsterType, Vector2 InDelta)
     Damage = Spec.Damage;
     Speed = Spec.Speed;
     UpdatePeriod_ = GameEngine::Instance().GetFixedDeltaTime() / Speed;
+    BulletType_ = Spec.BulletType_;
     RenderString_ = Spec.RenderString;
 }
 
@@ -91,7 +95,9 @@ void Monster::Initialize(const Transform& InTransform, const Vector2& InDelta)
 
 void Monster::Update()
 {
-    UpdateTimer_ += GameEngine::Instance().GetFixedDeltaTime();
+    const float DeltaTime = GameEngine::Instance().GetFixedDeltaTime();
+    UpdateTimer_ += DeltaTime;
+    ShotDelay -= DeltaTime;
 
     if (UpdateTimer_ >= UpdatePeriod_)
     {
@@ -112,6 +118,12 @@ void Monster::Update()
         //printf("(%d, %d)\n", NextPosition_.X, NextPosition_.Y);
 #endif
         UpdateNextPosition();
+    }
+
+    if (ShotDelay <= 0.0f)
+    {
+        ShotDelay = MonsterShotDelay;
+        FireBullet();
     }
 }
 
@@ -157,17 +169,57 @@ void Monster::TurnAround()
 void Monster::FireBullet() const
 {
     // MonsterType에 따라 총구와 발사하는 총알 개수가 달라짐
-    switch (MonsterType_)
+    if (MonsterType_ == MonsterType::Default)
     {
-        case MonsterType::TripleShot:
-            break;
-        case MonsterType::Settled:
-            break;
-        case MonsterType::Boss:
-            break;
-        case MonsterType::Default:
+        Bullet* FiredBullet = new Bullet(Faction_, BulletType_);
+        Transform BulletTransform{};
+        Vector2 BulletDelta{ 0, 1 };
 
-        default:
-            break;
+        auto [RoundedPosX, RoundedPosY] = Transform_.Position.ToRoundInt();
+        auto [RoundedDeltaX, RoundedDeltaY] = Delta_.ToRoundInt();
+
+        BulletTransform.Position.X = static_cast<float>(RoundedPosX + RoundedDeltaX + static_cast<int>((Transform_.Width / 2) - (FiredBullet->GetWidth() / 2)));
+        BulletTransform.Position.Y = static_cast<float>(RoundedPosY + RoundedDeltaY + static_cast<int>(Transform_.Height - 1));
+
+        GameEngine::Instance().Instantiate(FiredBullet, BulletTransform, BulletDelta);
+    }
+    else if (MonsterType_ == MonsterType::TripleShot)
+    {
+        std::vector<Bullet*> FiredBullets = { new Bullet(Faction_, BulletType_) , new Bullet(Faction_, BulletType_), new Bullet(Faction_, BulletType_) };
+        std::vector<Transform> BulletTransforms = { Transform{}, Transform{}, Transform{} };
+        std::vector<Vector2> BulletDeltas = { { -1.0f, 0.5f }, { 0.0f, 1.0f }, { 1.0f, 0.5f } };
+
+        auto [RoundedPosX, RoundedPosY] = Transform_.Position.ToRoundInt();
+        auto [RoundedDeltaX, RoundedDeltaY] = Delta_.ToRoundInt();
+
+        BulletTransforms[1].Position.X = static_cast<float>(RoundedPosX + RoundedDeltaX + static_cast<int>((Transform_.Width / 2) - (FiredBullets[1]->GetWidth() / 2)));
+        BulletTransforms[1].Position.Y = static_cast<float>(RoundedPosY + RoundedDeltaY + static_cast<int>(Transform_.Height - 1));
+        BulletTransforms[0].Position.X = BulletTransforms[1].Position.X - 1.0f;
+        BulletTransforms[0].Position.Y = BulletTransforms[1].Position.Y;
+        BulletTransforms[2].Position.X = BulletTransforms[1].Position.X + 1.0f;
+        BulletTransforms[2].Position.Y = BulletTransforms[1].Position.Y;
+
+        for (int i = 0; i < 3; i++)
+        {
+            GameEngine::Instance().Instantiate(FiredBullets[i], BulletTransforms[i], BulletDeltas[i]);
+        }
+    }
+    else if (MonsterType_ == MonsterType::Settled)
+    {
+        Bullet* FiredBullet = new Bullet(Faction_, BulletType_);
+        Transform BulletTransform{};
+        Vector2 BulletDelta{ 0, 1 };
+
+        auto [RoundedPosX, RoundedPosY] = Transform_.Position.ToRoundInt();
+        auto [RoundedDeltaX, RoundedDeltaY] = Delta_.ToRoundInt();
+
+        BulletTransform.Position.X = static_cast<float>(RoundedPosX + RoundedDeltaX + static_cast<int>((Transform_.Width / 2) - (FiredBullet->GetWidth() / 2)));
+        BulletTransform.Position.Y = static_cast<float>(RoundedPosY + RoundedDeltaY + static_cast<int>(Transform_.Height - 1));
+
+        GameEngine::Instance().Instantiate(FiredBullet, BulletTransform, BulletDelta);
+    }
+    else if (MonsterType_ == MonsterType::Boss)
+    {
+        // TODO:
     }
 }

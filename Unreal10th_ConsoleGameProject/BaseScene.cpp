@@ -302,6 +302,7 @@ void BaseScene::TryXMove(GameObject* ObjA, size_t i)
             auto [ObjBPosX, ObjBPosY] = ObjB->GetPosition().ToRoundInt();
 
             if (ObjA->GetCollisionLayer() != ObjB->GetCollisionLayer()
+                && ObjA->GetFaction() != ObjB->GetFaction()
                 && CheckAABBCollision(RoundedNextX, ObjAPosY, ObjA->GetWidth(), ObjA->GetHeight(),
                                       ObjBPosX, ObjBPosY, ObjB->GetWidth(), ObjB->GetHeight()))
             {
