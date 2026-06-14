@@ -32,7 +32,7 @@ public:
     void UpdateCollisions();
     void TakeDamage(int InDamage);
 
-    inline void Destroy() { bIsDestroyed_ = true; }
+    inline void Destroy() { Transform_.Width = 0; Transform_.Height = 0; bIsDestroyed_ = true; }
     inline bool IsDestroyed() const { return bIsDestroyed_; }
     inline void AddCurrentCollision(GameObject* Other) { CurrentCollisions.insert(Other); }
     inline bool WasCollidedWith(GameObject* Other) { return PrevCollisions.count(Other) > 0; }

@@ -315,7 +315,6 @@ void BaseScene::TryXMove(GameObject* ObjA, size_t i)
     }
 }
 
-
 void BaseScene::TryYMove(GameObject* ObjA, size_t i)
 {
     auto [ObjAPosX, ObjAPosY] = ObjA->GetPosition().ToRoundInt();
@@ -442,6 +441,11 @@ void BaseScene::RenderSceneObjects()
 {
     for (auto& obj : SceneObjects)
     {
+        if (obj->IsDestroyed() || obj == Player_)
+        {
+            continue;
+        }
+
         for (size_t i = 0; i < obj->GetHeight(); i++)
         {
             for (size_t j = 0; j < obj->GetWidth(); j++)
@@ -452,6 +456,21 @@ void BaseScene::RenderSceneObjects()
                 {
                     Screen[PositionY + i][PositionX + j] = obj->GetRenderingVector()[i][j];
                 }
+            }
+        }
+    }
+
+    if (Player_ == nullptr || Player_->IsDestroyed()) return;
+
+    for (size_t i = 0; i < Player_->GetHeight(); i++)
+    {
+        for (size_t j = 0; j < Player_->GetWidth(); j++)
+        {
+            auto [PositionX, PositionY] = Player_->GetPosition().ToRoundInt();
+            if (Screen[PositionY + i][PositionX + j] == L' '
+                && Player_->GetRenderingVector()[i][j] != L' ')
+            {
+                Screen[PositionY + i][PositionX + j] = Player_->GetRenderingVector()[i][j];
             }
         }
     }
@@ -502,13 +521,17 @@ void BaseScene::RenderStatus()
     std::wstring PlayerTextStr = L"P L A Y E R";
     Screen[19].replace(GetTextStartX(StatusStartX, PlayerTextStr.length()), PlayerTextStr.length(), PlayerTextStr);
 
-    //std::wstring PlayerHpStr = L"♡ ♡ ♡";
     std::wstring PlayerHpStr = L"";
     for (int i = 0; i < Player_->GetHp() - 1; i++)
     {
         PlayerHpStr += L"♡ ";
     }
-    PlayerHpStr += L"♡";
+
+    if (Player_->GetHp() > 0)
+    {
+        PlayerHpStr += L"♡";
+    }
+
     Screen[21].replace(GetTextStartX(StatusStartX, PlayerHpStr.length()), PlayerHpStr.length(), PlayerHpStr);
 
     for (size_t i = StatusStartX; i < Width_; i++)
