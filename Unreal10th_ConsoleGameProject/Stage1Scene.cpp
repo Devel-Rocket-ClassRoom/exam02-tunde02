@@ -38,7 +38,7 @@ void Stage1Scene::Enter()
     Instantiate(new Monster(MonsterType::Settled), Transform(2.0f, 9.0f, 0, 0), { 0.0f, 0.0f }, Timer);
     Instantiate(new Monster(MonsterType::Settled), Transform(26.0f, 2.0f, 0, 0), { 0.0f, 0.0f }, Timer);
     Instantiate(new Monster(MonsterType::Settled), Transform(51.0f, 9.0f, 0, 0), { 0.0f, 0.0f }, Timer);
-    Timer += 0.4f;
+    Timer += 2.0f;
 
     Instantiate(new Monster(MonsterType::TripleShot), Transform(2.0f, 2.0f, 0, 0), { 1.0f, 1.2f }, Timer);
     Instantiate(new Monster(MonsterType::TripleShot), Transform(50.0f, 2.0f, 0, 0), { -1.0f, 0.2f }, Timer);
@@ -52,6 +52,8 @@ void Stage1Scene::Enter()
         Instantiate(new Monster(MonsterType::Default), Transform(56.0f, 2.0f, 0, 0), { -1.0f, 0.0f }, Timer);
         Timer += 0.07f;
     }
+
+    Timer += 3.0f;
 
     // BOSS
 }

@@ -233,6 +233,10 @@ void BaseScene::Update()
     {
         if (Obj != nullptr && Obj->IsDestroyed())
         {
+            if (Obj->GetCollisionLayer() == CollisionLayer::Monster)
+            {
+                Score += 1000;
+            }
             delete Obj;
             Obj = nullptr;
         }
@@ -549,7 +553,7 @@ void BaseScene::RenderStatus()
     std::wstring ScoreTextStr = L"S C O R E";
     Screen[11].replace(GetTextStartX(StatusStartX, ScoreTextStr.length()), ScoreTextStr.length(), ScoreTextStr);
 
-    std::wstring ScoreNumberStr = L"000,000,000";
+    std::wstring ScoreNumberStr = std::to_wstring(Score);
     Screen[13].replace(GetTextStartX(StatusStartX, ScoreNumberStr.length()), ScoreNumberStr.length(), ScoreNumberStr);
 
     for (size_t i = StatusStartX; i < Width_; i++)
