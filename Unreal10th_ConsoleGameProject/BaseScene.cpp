@@ -509,10 +509,22 @@ void BaseScene::RenderStatus()
     const size_t StatusStartX = 61;
 
     // 위, 아래 테두리
-    for (size_t i = StatusStartX; i < Width_; i++)
+    for (size_t i = 0; i < Width_; i++)
     {
         Screen[0][i] = L'█';
         Screen[Height_ - 2][i] = L'█';
+    }
+
+    // 왼쪽 테두리
+    for (size_t i = 1; i < Height_ - 2; i++)
+    {
+        Screen[i][0] = L'█';
+    }
+
+    // 가운데 테두리
+    for (size_t i = 1; i < Height_ - 2; i++)
+    {
+        Screen[i][RealWidth] = L'█';
     }
 
     // 오른쪽 테두리
