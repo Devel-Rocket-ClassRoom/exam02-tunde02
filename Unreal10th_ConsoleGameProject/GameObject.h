@@ -28,12 +28,13 @@ public:
     virtual void OnCollisionEnter(GameObject* Other) {}
     virtual void OnCollisionStay(GameObject* Other) {}
     virtual void OnCollisionExit(GameObject* Other) {}
+    virtual void TakeDamage(int InDamage);
 
     void UpdateCollisions();
-    void TakeDamage(int InDamage);
 
     inline void Destroy() { Transform_.Width = 0; Transform_.Height = 0; bIsDestroyed_ = true; }
     inline bool IsDestroyed() const { return bIsDestroyed_; }
+    inline bool CanCollide() const { return bCanCollide; }
     inline void AddCurrentCollision(GameObject* Other) { CurrentCollisions.insert(Other); }
     inline bool WasCollidedWith(GameObject* Other) { return PrevCollisions.count(Other) > 0; }
     inline bool IsCollidedWith(GameObject* Other) { return CurrentCollisions.count(Other) > 0; }
@@ -78,6 +79,7 @@ protected:
     int Damage = 0;
     float Speed = 0.0f;
     bool bIsDestroyed_ = false; // 지연 삭제용 플래그
+    bool bCanCollide = true;
     float UpdatePeriod_ = 0.0f;
     float UpdateTimer_ = 0.0f;
     std::vector<std::wstring> RenderString_;

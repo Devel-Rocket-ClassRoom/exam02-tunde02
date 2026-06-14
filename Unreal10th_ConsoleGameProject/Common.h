@@ -68,7 +68,8 @@ struct Vector2
     Vector2& operator=(const Vector2& other);
 
     //std::pair<int, int> ToRoundInt() const { return { static_cast<int>(X), static_cast<int>(Y) }; }
-    std::pair<int, int> ToRoundInt() const { return { static_cast<int>(std::round(X)), static_cast<int>(std::round(Y)) }; }
+    //std::pair<int, int> ToRoundInt() const { return { static_cast<int>(std::round(X)), static_cast<int>(std::round(Y)) }; }
+    std::pair<int, int> ToRoundInt() const { return { static_cast<int>(std::floor(X)), static_cast<int>(std::floor(Y)) }; }
 };
 
 struct Transform

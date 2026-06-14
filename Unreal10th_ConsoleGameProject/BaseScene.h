@@ -27,6 +27,8 @@ protected:
     GameObject* Player_ = nullptr;
     size_t Width_ = 0;
     size_t Height_ = 0;
+    size_t RealWidth = 60;
+    size_t RealHeight = 46;
 
 public:
     BaseScene(int Width, int Height);

@@ -141,7 +141,8 @@ void Bullet::Update()
 
 void Bullet::OnCollisionEnter(GameObject* Other)
 {
-    if (Other == nullptr || (Other->GetCollisionLayer() == CollisionLayer::Bullet))
+    if (Other == nullptr) Destroy();
+    else if ((Other->GetCollisionLayer() == CollisionLayer::Bullet))
     {
         return;
     }

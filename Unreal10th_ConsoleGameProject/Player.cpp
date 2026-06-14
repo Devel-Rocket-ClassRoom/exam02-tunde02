@@ -23,29 +23,38 @@ Player::Player()
 
 void Player::Update()
 {
-    ShotDelay -= GameEngine::Instance().GetFixedDeltaTime();
-    DeltaDirection = Direction::None;
+    float DeltaTime = GameEngine::Instance().GetFixedDeltaTime();
+    ShotDelay -= DeltaTime;
+    InvincibleTimer += DeltaTime;
+
+    if (InvincibleTimer > InvincibleDuration)
+    {
+        InvincibleTimer = 0.0f;
+        bCanCollide = true;
+        ChangePlayerState(PlayerState::Normal);
+    }
 
     Delta_.X = 0.0f;
     Delta_.Y = 0.0f;
 
-    if (GetAsyncKeyState(VK_UP)) // ↑
+    if (GetAsyncKeyState(VK_UP) && CurrentPlayerState != PlayerState::Uncontrollable) // ↑
     {
         Delta_.Y = -2.0f;
     }
-    else if (GetAsyncKeyState(VK_DOWN)) // ↓
+    else if (GetAsyncKeyState(VK_DOWN) && CurrentPlayerState != PlayerState::Uncontrollable) // ↓
     {
         Delta_.Y = 2.0f;
     }
 
-    if (GetAsyncKeyState(VK_LEFT)) // ←
+    if (GetAsyncKeyState(VK_LEFT) && CurrentPlayerState != PlayerState::Uncontrollable) // ←
     {
         Delta_.X = -2.0f;
     }
-    else if (GetAsyncKeyState(VK_RIGHT)) // →
+    else if (GetAsyncKeyState(VK_RIGHT) && CurrentPlayerState != PlayerState::Uncontrollable) // →
     {
         Delta_.X = 2.0f;
     }
+
     NormalizeDelta();
 
 #if 0
@@ -68,7 +77,7 @@ void Player::Update()
     }
 #endif
 
-    if (GetAsyncKeyState(VK_SPACE))
+    if (GetAsyncKeyState(VK_SPACE) && CurrentPlayerState != PlayerState::Uncontrollable)
     {
         if (ShotDelay <= 0.0f)
         {
@@ -82,38 +91,24 @@ void Player::Update()
 
 void Player::OnCollisionEnter(GameObject* Other)
 {
-    if (Other->GetCollisionLayer() == CollisionLayer::Wall)
-    {
-        if (Delta_.X > 0.0f && Transform_.Position.X > Other->GetPosition().X)
-        {
 
-        }
-        else if (Delta_.X < 0.0f && Transform_.Position.X < Other->GetPosition().X)
-        {
-
-        }
-    }
 }
 
 void Player::OnCollisionExit(GameObject* Other)
 {
 }
 
-//void Player::NormalizeDelta()
-//{
-//    float len = std::sqrt(Delta_.X * Delta_.X + Delta_.Y * Delta_.Y);
-//
-//    // 길이가 0인 경우(정지 상태) 나누기 에러 방지
-//    if (len == 0.0f)
-//    {
-//        Delta_.X = 0.0f;
-//        Delta_.Y = 0.0f;
-//        return;
-//    }
-//
-//    Delta_.X /= len;
-//    Delta_.Y /= len;
-//}
+void Player::TakeDamage(int InDamage)
+{
+    if (CurrentPlayerState == PlayerState::Invincible)
+    {
+        return;
+    }
+
+    GameObject::TakeDamage(InDamage);
+    bCanCollide = false;
+    ChangePlayerState(PlayerState::Invincible);
+}
 
 void Player::FireBullet() const
 {

@@ -10,6 +10,7 @@ Monster::Monster()
     Transform_.Width = Spec.Width;
     Transform_.Height = Spec.Height;
     CollisionLayer_ = CollisionLayer::Monster;
+    Faction_ = Faction::Monster;
     Hp = Spec.Hp;
     Damage = Spec.Damage;
     Speed = Spec.Speed;
@@ -59,6 +60,7 @@ Monster::Monster(MonsterType InMonsterType)
     Transform_.Width = Spec.Width;
     Transform_.Height = Spec.Height;
     CollisionLayer_ = CollisionLayer::Monster;
+    Faction_ = Faction::Monster;
     Hp = Spec.Hp;
     Damage = Spec.Damage;
     Speed = Spec.Speed;
@@ -77,6 +79,7 @@ Monster::Monster(MonsterType InMonsterType, Vector2 InDelta)
     Delta_ = InDelta;
     NormalizeDelta();
     CollisionLayer_ = CollisionLayer::Monster;
+    Faction_ = Faction::Monster;
     Hp = Spec.Hp;
     Damage = Spec.Damage;
     Speed = Spec.Speed;
@@ -131,10 +134,10 @@ void Monster::OnCollisionEnter(GameObject* Other)
 {
     if (Other == nullptr)
     {
+        TurnAround();
+        UpdateNextPosition();
         return;
     }
-
-    CollisionLayer cc = Other->GetCollisionLayer();
 
     if (Other->GetCollisionLayer() == CollisionLayer::Wall)
     {
