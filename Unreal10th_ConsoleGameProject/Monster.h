@@ -18,10 +18,9 @@ public:
     void FireBullet() const;
 
 private:
-    const float MonsterShotDelay = 0.1f;
-
     MonsterType MonsterType_ = MonsterType::Default;
     BulletType BulletType_ = BulletType::Default;
+    float MonsterShotDelay = 0.1f;
     float ShotDelay = 0.0f;
 
     struct MonsterSpec
@@ -32,6 +31,7 @@ private:
         int Hp;
         int Damage;
         float Speed;
+        float ShotDelay;
         BulletType BulletType_;
         std::vector<std::wstring> RenderString;
     };
@@ -46,6 +46,7 @@ private:
                 3,
                 1,
                 1.0f,
+                0.3f,
                 BulletType::Default,
                 {
                     L"█ ░ █",
@@ -63,6 +64,7 @@ private:
                 5,
                 1,
                 0.5f,
+                0.3f,
                 BulletType::Default,
                 {
                     L"  ░█░  ",
@@ -82,6 +84,7 @@ private:
                 10,
                 2,
                 0.0f,
+                0.3f,
                 BulletType::Upgrade_2,
                 {
                     L"   ░   ",
@@ -101,6 +104,7 @@ private:
                 50,
                 5,
                 0.2f,
+                0.1f,
                 BulletType::Upgrade_1,
                 {
                     L"⢀⣠⣴⣿⣿⣦⣄⡀",

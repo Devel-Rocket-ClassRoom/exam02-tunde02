@@ -10,20 +10,50 @@ Stage1Scene::Stage1Scene(int Width, int Height) : BaseScene(Width, Height) {}
 
 void Stage1Scene::Enter()
 {
-    std::cout << "▶ [Stage1Scene] 진입: 1스테이지 맵 및 몬스터 생성" << std::endl;
-
-    // Stage 1 전용 오브젝트 배치
     Player_ = new Player();
     SceneObjects.push_back(Player_);
 
-    Transform t{ 5.0f, 2.0f, 0, 0 };
-    for (int i = 0; i < 1; i++)
+    float Timer = 0.25f;
+    for (int i = 0; i < 10; i++)
     {
-        //Instantiate(new Monster(10, 2), t, {}, static_cast<float>(i) / 30);
-        //Instantiate(new Monster(MonsterType::Default), t, { -2.5f, 0.2f }, static_cast<float>(i) / 20);
-        //Instantiate(new Monster(MonsterType::Default), t, { 0.0f, 0.0f }, static_cast<float>(i) / 20);
-        Instantiate(new Monster(MonsterType::TripleShot), t, { -2.5f, 0.2f }, static_cast<float>(i) / 20);
+        Instantiate(new Monster(MonsterType::Default), Transform(5.0f, 2.0f, 0, 0), { -2.5f, 0.2f }, Timer);
+        Timer += 0.25f;
     }
+
+    Timer += 0.4f;
+
+    for (int i = 0; i < 3; i++)
+    {
+        Instantiate(new Monster(MonsterType::TripleShot), Transform(2.0f, 2.0f, 0, 0), { 1.0f, 0.2f }, Timer);
+        Instantiate(new Monster(MonsterType::TripleShot), Transform(50.0f, 2.0f, 0, 0), { -1.0f, 0.2f }, Timer);
+        Timer += 0.4f;
+    }
+
+    Timer += 0.4f;
+
+    Instantiate(new Monster(MonsterType::Settled), Transform(2.0f, 2.0f, 0, 0), { 0.0f, 0.0f }, Timer);
+    Instantiate(new Monster(MonsterType::Settled), Transform(26.0f, 9.0f, 0, 0), { 0.0f, 0.0f }, Timer);
+    Instantiate(new Monster(MonsterType::Settled), Transform(51.0f, 2.0f, 0, 0), { 0.0f, 0.0f }, Timer);
+    Timer += 0.4f;
+    Instantiate(new Monster(MonsterType::Settled), Transform(2.0f, 9.0f, 0, 0), { 0.0f, 0.0f }, Timer);
+    Instantiate(new Monster(MonsterType::Settled), Transform(26.0f, 2.0f, 0, 0), { 0.0f, 0.0f }, Timer);
+    Instantiate(new Monster(MonsterType::Settled), Transform(51.0f, 9.0f, 0, 0), { 0.0f, 0.0f }, Timer);
+    Timer += 0.4f;
+
+    Instantiate(new Monster(MonsterType::TripleShot), Transform(2.0f, 2.0f, 0, 0), { 1.0f, 1.2f }, Timer);
+    Instantiate(new Monster(MonsterType::TripleShot), Transform(50.0f, 2.0f, 0, 0), { -1.0f, 0.2f }, Timer);
+    Instantiate(new Monster(MonsterType::TripleShot), Transform(2.0f, 2.0f, 0, 0), { 1.0f, 0.2f }, Timer + 0.2f);
+    Instantiate(new Monster(MonsterType::TripleShot), Transform(50.0f, 2.0f, 0, 0), { -1.0f, 0.2f }, Timer + 0.2f);
+    Instantiate(new Monster(MonsterType::Settled), Transform(13.0f, 9.0f, 0, 0), { 0.0f, 0.0f }, Timer);
+    Instantiate(new Monster(MonsterType::Settled), Transform(38.0f, 9.0f, 0, 0), { 0.0f, 0.0f }, Timer);
+    for (int i = 0; i < 20; i++)
+    {
+        Instantiate(new Monster(MonsterType::Default), Transform(5.0f, 2.0f, 0, 0), { 1.0f, 0.0f }, Timer);
+        Instantiate(new Monster(MonsterType::Default), Transform(56.0f, 2.0f, 0, 0), { -1.0f, 0.0f }, Timer);
+        Timer += 0.07f;
+    }
+
+    // BOSS
 }
 
 void Stage1Scene::Exit()

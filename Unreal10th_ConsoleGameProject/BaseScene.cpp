@@ -65,7 +65,7 @@ void BaseScene::Update()
     {
         Request.Timer -= GameEngine::Instance().GetFixedDeltaTime();
 
-        if (Request.Timer <= 0.0f)
+        if (Request.Timer < 0.0f)
         {
             SceneObjects.push_back(Request.Object);
         }
@@ -76,7 +76,7 @@ void BaseScene::Update()
             InstantiateRequests.begin(),
             InstantiateRequests.end(),
             [](const InstantiateRequest& request) {
-                return request.Timer <= 0.0f;
+                return request.Timer < 0.0f;
             }),
         InstantiateRequests.end()
     );

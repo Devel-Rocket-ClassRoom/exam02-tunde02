@@ -16,6 +16,7 @@ Monster::Monster()
     Speed = Spec.Speed;
     UpdatePeriod_ = GameEngine::Instance().GetFixedDeltaTime() / Speed;
     BulletType_ = Spec.BulletType_;
+    MonsterShotDelay = Spec.ShotDelay;
     RenderString_ = Spec.RenderString;
 }
 
@@ -66,6 +67,7 @@ Monster::Monster(MonsterType InMonsterType)
     Speed = Spec.Speed;
     UpdatePeriod_ = GameEngine::Instance().GetFixedDeltaTime() / Speed;
     BulletType_ = Spec.BulletType_;
+    MonsterShotDelay = Spec.ShotDelay;
     RenderString_ = Spec.RenderString;
 }
 
@@ -85,6 +87,7 @@ Monster::Monster(MonsterType InMonsterType, Vector2 InDelta)
     Speed = Spec.Speed;
     UpdatePeriod_ = GameEngine::Instance().GetFixedDeltaTime() / Speed;
     BulletType_ = Spec.BulletType_;
+    MonsterShotDelay = Spec.ShotDelay;
     RenderString_ = Spec.RenderString;
 }
 
@@ -134,14 +137,7 @@ void Monster::OnCollisionEnter(GameObject* Other)
 {
     if (Other == nullptr)
     {
-        TurnAround();
-        UpdateNextPosition();
-        return;
-    }
-
-    if (Other->GetCollisionLayer() == CollisionLayer::Wall)
-    {
-        if (Other->GetPosition().Y > Transform_.Position.Y)
+        if (Transform_.Position.Y + Transform_.Height > GameEngine::Instance().GetScreenHeight() - 4)
         {
             Destroy();
         }
@@ -151,10 +147,23 @@ void Monster::OnCollisionEnter(GameObject* Other)
             UpdateNextPosition();
         }
     }
-    else if (Other->GetCollisionLayer() == CollisionLayer::Player)
-    {
-        Other->TakeDamage(Damage);
-    }
+
+    //if (Other->GetCollisionLayer() == CollisionLayer::Wall)
+    //{
+    //    if (Other->GetPosition().Y > Transform_.Position.Y)
+    //    {
+    //        Destroy();
+    //    }
+    //    else
+    //    {
+    //        TurnAround();
+    //        UpdateNextPosition();
+    //    }
+    //}
+    //else if (Other->GetCollisionLayer() == CollisionLayer::Player)
+    //{
+    //    Other->TakeDamage(Damage);
+    //}
 }
 
 void Monster::TurnAround()

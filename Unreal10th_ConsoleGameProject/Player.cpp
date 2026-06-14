@@ -39,20 +39,20 @@ void Player::Update()
 
     if (GetAsyncKeyState(VK_UP) && CurrentPlayerState != PlayerState::Uncontrollable) // ↑
     {
-        Delta_.Y = -2.0f;
+        Delta_.Y = -1.0f;
     }
     else if (GetAsyncKeyState(VK_DOWN) && CurrentPlayerState != PlayerState::Uncontrollable) // ↓
     {
-        Delta_.Y = 2.0f;
+        Delta_.Y = 1.0f;
     }
 
     if (GetAsyncKeyState(VK_LEFT) && CurrentPlayerState != PlayerState::Uncontrollable) // ←
     {
-        Delta_.X = -2.0f;
+        Delta_.X = -1.0f;
     }
     else if (GetAsyncKeyState(VK_RIGHT) && CurrentPlayerState != PlayerState::Uncontrollable) // →
     {
-        Delta_.X = 2.0f;
+        Delta_.X = 1.0f;
     }
 
     NormalizeDelta();

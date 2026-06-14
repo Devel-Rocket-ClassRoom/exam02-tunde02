@@ -24,9 +24,13 @@ public:
     GameObject* Instantiate(const GameObjectType InGameObjectType, const Transform& InTransform, const Vector2& InDelta);
 
     inline float GetFixedDeltaTime() const { return FixedDeltaTime; }
+    inline int GetScreenWidth() const { return ScreenWidth; }
+    inline int GetScreenHeight() const { return ScreenHeight; }
 
 private:
     const int TargetFPS = 120;
+    int ScreenWidth = 83;
+    int ScreenHeight = 48;
     float FixedDeltaTime = 0.0f;
     int FrameMilliseconds = 0;
     BaseScene* currentScene = nullptr; // 현재 활성화된 씬 포인터
