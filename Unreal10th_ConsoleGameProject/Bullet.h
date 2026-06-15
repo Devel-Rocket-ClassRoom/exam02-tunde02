@@ -20,6 +20,8 @@ public:
     inline void SetFaction(Faction InFaction) { Faction_ = InFaction; }
 
 private:
+    BulletType BulletType_ = BulletType::Default;
+
     struct BulletSpec
     {
         //BulletType Type;
@@ -82,6 +84,4 @@ private:
             }
         }
     };
-
-    BulletType BulletType_ = BulletType::Default;
 };

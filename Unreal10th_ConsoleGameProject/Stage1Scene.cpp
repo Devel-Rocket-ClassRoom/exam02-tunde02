@@ -1,12 +1,11 @@
 ﻿#include "Stage1Scene.h"
+#include "GameEngine.h"
 #include "Player.h"
 #include "Monster.h"
 #include "Wall.h"
 #include "Bullet.h"
-
+#include "Item.h"
 #include <iostream>
-
-Stage1Scene::Stage1Scene(int Width, int Height) : BaseScene(Width, Height) {}
 
 void Stage1Scene::Enter()
 {

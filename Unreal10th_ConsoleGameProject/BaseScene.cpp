@@ -10,7 +10,6 @@ BaseScene::BaseScene(int Width, int Height) : Width_(Width), Height_(Height) {}
 
 BaseScene::~BaseScene()
 {
-    printf("신 오브젝트 메모리 해제\n");
     for (GameObject* SceneObject : SceneObjects)
     {
         delete SceneObject;
@@ -316,10 +315,14 @@ void BaseScene::TryXMove(GameObject* ObjA, size_t i)
                 || ObjA->GetCollisionLayer() == ObjB->GetCollisionLayer()
                 || ObjA->GetFaction() == ObjB->GetFaction())
             {
-                continue;
+                if (!IsPlayerAndItem(ObjA, ObjB))
+                {
+                    continue;
+                }
             }
 
             auto [ObjBPosX, ObjBPosY] = ObjB->GetPosition().ToRoundInt();
+
             if (CheckAABBCollision(IntNextX, ObjAPosY, ObjA->GetWidth(), ObjA->GetHeight(),
                                    ObjBPosX, ObjBPosY, ObjB->GetWidth(), ObjB->GetHeight()))
             {
@@ -388,9 +391,11 @@ void BaseScene::TryYMove(GameObject* ObjA, size_t i)
                 || ObjA->GetCollisionLayer() == ObjB->GetCollisionLayer()
                 || ObjA->GetFaction() == ObjB->GetFaction())
             {
-                continue;
+                if (!IsPlayerAndItem(ObjA, ObjB))
+                {
+                    continue;
+                }
             }
-
             auto [ObjBPosX, ObjBPosY] = ObjB->GetPosition().ToRoundInt();
             if (CheckAABBCollision(ObjAPosX, IntNextY, ObjA->GetWidth(), ObjA->GetHeight(),
                                    ObjBPosX, ObjBPosY, ObjB->GetWidth(), ObjB->GetHeight()))

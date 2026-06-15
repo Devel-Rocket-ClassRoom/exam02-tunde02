@@ -11,12 +11,10 @@ private:
     float ShotDelay = 0.0f;
     BulletType CurrentBulletType = BulletType::Default;
 
-    enum class PlayerState { Normal, Invincible, Uncontrollable };
     PlayerState CurrentPlayerState = PlayerState::Normal;
-    const float InvincibleDuration = 0.8f;
+    const float InvincibleDuration = 0.7f;
     float InvincibleTimer = 0.0f;
 
-    inline void ChangePlayerState(PlayerState InPlayerState) { CurrentPlayerState = InPlayerState; }
 
 public:
     Player();
@@ -28,7 +26,10 @@ public:
     //void NormalizeDelta();
 
     void FireBullet() const;
+    void RecoverHp(int InAmount);
+    void UpgradeBullet();
 
     inline int GetHp() const { return Hp; }
+    inline void ChangePlayerState(PlayerState InPlayerState) { CurrentPlayerState = InPlayerState; }
     inline bool IsInvincible() const { return CurrentPlayerState == PlayerState::Invincible; }
 };

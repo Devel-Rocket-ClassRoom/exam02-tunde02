@@ -12,6 +12,12 @@ enum class GameObjectType
     Monster,
     Bullet
 };
+enum class PlayerState
+{
+    Normal,
+    Invincible,
+    Uncontrollable
+};
 
 enum class MonsterType
 {
@@ -27,6 +33,13 @@ enum class BulletType
     Upgrade_1,
     Upgrade_2,
     Upgrade_3
+};
+
+enum class ItemType
+{
+    None,
+    Recovery,
+    BulletUpgrade
 };
 
 enum class CollisionLayer

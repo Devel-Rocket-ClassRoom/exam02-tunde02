@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "GameObject.h"
+#include "Player.h"
 #include <vector>
 
 // ==========================================
@@ -24,7 +25,8 @@ protected:
     std::vector<std::wstring> Screen;
     std::vector<GameObject*> SceneObjects;
     std::vector<InstantiateRequest> InstantiateRequests;
-    GameObject* Player_ = nullptr;
+    //GameObject* Player_ = nullptr;
+    Player* Player_ = nullptr;
     size_t Width_ = 0;
     size_t Height_ = 0;
     size_t RealWidth = 60;
@@ -57,4 +59,9 @@ private:
     void RenderStatus();
     size_t GetTextStartX(const size_t UiStartX, const size_t Length) const;
     void PrintScreen();
+
+    inline bool IsPlayerAndItem(const GameObject* ObjA, const GameObject* ObjB) {
+        return (ObjA->GetCollisionLayer() == CollisionLayer::Player && ObjB->GetCollisionLayer() == CollisionLayer::Item)
+            || (ObjA->GetCollisionLayer() == CollisionLayer::Item && ObjB->GetCollisionLayer() == CollisionLayer::Player);
+    }
 };

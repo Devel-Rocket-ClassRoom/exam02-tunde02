@@ -25,7 +25,11 @@ void Player::Update()
 {
     float DeltaTime = GameEngine::Instance().GetFixedDeltaTime();
     ShotDelay -= DeltaTime;
-    InvincibleTimer += DeltaTime;
+
+    if (CurrentPlayerState == PlayerState::Invincible)
+    {
+        InvincibleTimer += DeltaTime;
+    }
 
     if (InvincibleTimer > InvincibleDuration)
     {
@@ -118,10 +122,33 @@ void Player::FireBullet() const
     Bullet* FiredBullet = new Bullet(Faction_, CurrentBulletType);
     Vector2 BulletDelta{ 0, -1 };
     Transform BulletTransform{};
+
     auto [RoundedPosX, RoundedPosY] = Transform_.Position.ToRoundInt();
     auto [RoundedDeltaX, RoundedDeltaY] = Delta_.ToRoundInt();
+
     BulletTransform.Position.X = static_cast<float>(RoundedPosX + RoundedDeltaX + static_cast<int>((Transform_.Width / 2) - (FiredBullet->GetWidth() / 2)));
-    BulletTransform.Position.Y = static_cast<float>(RoundedPosY + RoundedDeltaY - static_cast<int>(FiredBullet->GetHeight()));
+    BulletTransform.Position.Y = static_cast<float>(RoundedPosY + RoundedDeltaY - static_cast<int>(FiredBullet->GetHeight())) + 1.0f;
 
     GameEngine::Instance().Instantiate(FiredBullet, BulletTransform, BulletDelta);
+}
+
+void Player::RecoverHp(int InAmount)
+{
+    Hp += InAmount;
+
+    if (Hp > MaxHp)
+    {
+        Hp = MaxHp;
+    }
+}
+
+void Player::UpgradeBullet()
+{
+    int UpgradedBulletTypeInt = static_cast<int>(CurrentBulletType) + 1;
+
+    if (UpgradedBulletTypeInt <= static_cast<int>(BulletType::Upgrade_3))
+    {
+        CurrentBulletType = static_cast<BulletType>(UpgradedBulletTypeInt);
+    }
+
 }

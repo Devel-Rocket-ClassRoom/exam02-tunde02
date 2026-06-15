@@ -110,6 +110,10 @@ void Bullet::Initialize(const Transform& InTransform, const Vector2& InDelta)
 {
     Transform_.Position = InTransform.Position;
     Delta_ = InDelta;
+    Delta_ = Delta_.Normalized();
+    //if (std::sqrt(Delta_.X * Delta_.X + Delta_.Y * Delta_.Y) > 1.0f)
+    //{
+    //}
     NextPosition_ = Transform_.Position;
 }
 
@@ -141,8 +145,12 @@ void Bullet::Update()
 
 void Bullet::OnCollisionEnter(GameObject* Other)
 {
-    if (Other == nullptr) Destroy();
-    else if ((Other->GetCollisionLayer() == CollisionLayer::Bullet))
+    if (Other == nullptr)
+    {
+        Destroy();
+    }
+    else if ((Other->GetCollisionLayer() == CollisionLayer::Bullet)
+             || (Other->GetCollisionLayer() == CollisionLayer::Item))
     {
         return;
     }
