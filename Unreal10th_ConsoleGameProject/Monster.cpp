@@ -161,6 +161,10 @@ void Monster::OnCollisionEnter(GameObject* Other)
             UpdateNextPosition();
         }
     }
+    else if (Other->GetCollisionLayer() == CollisionLayer::Player)
+    {
+        Other->TakeDamage(Damage);
+    }
 
     //if (Other->GetCollisionLayer() == CollisionLayer::Wall)
     //{
@@ -173,10 +177,6 @@ void Monster::OnCollisionEnter(GameObject* Other)
     //        TurnAround();
     //        UpdateNextPosition();
     //    }
-    //}
-    //else if (Other->GetCollisionLayer() == CollisionLayer::Player)
-    //{
-    //    Other->TakeDamage(Damage);
     //}
 }
 

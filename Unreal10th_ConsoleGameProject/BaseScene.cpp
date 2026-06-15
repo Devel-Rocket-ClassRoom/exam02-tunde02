@@ -321,7 +321,6 @@ void BaseScene::TryXMove(GameObject* ObjA, size_t i)
             }
 
             auto [ObjBPosX, ObjBPosY] = ObjB->GetPosition().ToRoundInt();
-
             if (CheckAABBCollision(IntNextX, ObjAPosY, ObjA->GetWidth(), ObjA->GetHeight(),
                                    ObjBPosX, ObjBPosY, ObjB->GetWidth(), ObjB->GetHeight()))
             {
@@ -395,6 +394,7 @@ void BaseScene::TryYMove(GameObject* ObjA, size_t i)
                     continue;
                 }
             }
+
             auto [ObjBPosX, ObjBPosY] = ObjB->GetPosition().ToRoundInt();
             if (CheckAABBCollision(ObjAPosX, IntNextY, ObjA->GetWidth(), ObjA->GetHeight(),
                                    ObjBPosX, ObjBPosY, ObjB->GetWidth(), ObjB->GetHeight()))
