@@ -99,9 +99,10 @@ void Stage1Scene::Exit()
 
 void Stage1Scene::Update()
 {
-    bIsStageCleared = bIsBossSpawned && SceneObjects.size() == 1 && SceneObjects[0] == Player_;
+    //bIsStageFinished = bIsBossSpawned && SceneObjects.size() == 1 && SceneObjects[0] == Player_;
+    bIsStageFinished = !IsPlayerAlive() || (bIsBossSpawned && !IsBossAlive());
 
-    if (!bIsStageCleared)
+    if (!bIsStageFinished)
     {
         StageTimer += GameEngine::Instance().GetFixedDeltaTime();
 
@@ -141,7 +142,7 @@ void Stage1Scene::Render()
     BaseScene::InitializeScreen();
     BaseScene::RenderSceneObjects();
     RenderStatus();
-    if (bIsStageCleared)
+    if (bIsStageFinished)
     {
         RenderStageClearMenu();
     }
@@ -286,24 +287,40 @@ void Stage1Scene::RenderStageClearMenu()
         Screen[i][Width_ - 6] = L'█';
     }
 
-    std::vector<std::wstring> ClearMessage = {
-        L" ██████╗    ██╗         ███████╗     █████╗     ██████╗ ",
-        L"██╔════╝    ██║         ██╔════╝    ██╔══██╗    ██╔══██╗",
-        L"██║         ██║         █████╗      ███████║    ██████╔╝",
-        L"██║         ██║         ██╔══╝      ██╔══██║    ██╔══██╗",
-        L"╚██████╗    ███████╗    ███████╗    ██║  ██║    ██║  ██║",
-        L" ╚═════╝    ╚══════╝    ╚══════╝    ╚═╝  ╚═╝    ╚═╝  ╚═╝"
-    };
+    std::vector<std::wstring> Message;
+
+    if (IsPlayerAlive())
+    {
+        Message = {
+            L" ██████╗    ██╗         ███████╗     █████╗     ██████╗ ",
+            L"██╔════╝    ██║         ██╔════╝    ██╔══██╗    ██╔══██╗",
+            L"██║         ██║         █████╗      ███████║    ██████╔╝",
+            L"██║         ██║         ██╔══╝      ██╔══██║    ██╔══██╗",
+            L"╚██████╗    ███████╗    ███████╗    ██║  ██║    ██║  ██║",
+            L" ╚═════╝    ╚══════╝    ╚══════╝    ╚═╝  ╚═╝    ╚═╝  ╚═╝"
+        };
+    }
+    else
+    {
+        Message =  {
+            L"███████╗     █████╗     ██╗    ██╗                  ",
+            L"██╔════╝    ██╔══██╗    ██║    ██║                  ",
+            L"█████╗      ███████║    ██║    ██║                  ",
+            L"██╔══╝      ██╔══██║    ██║    ██║                  ",
+            L"██║         ██║  ██║    ██║    ███████╗    ██╗██╗██╗",
+            L"╚═╝         ╚═╝  ╚═╝    ╚═╝    ╚══════╝    ╚═╝╚═╝╚═╝"
+        };
+    }
 
     for (size_t i = 0; i < 6; i++)
     {
-        Screen[14 + i].replace(GetTextStartX(0, ClearMessage[i].length()), ClearMessage[i].length(), ClearMessage[i]);
+        Screen[14 + i].replace(GetTextStartX(0, Message[i].length()), Message[i].length(), Message[i]);
     }
 
     std::wstring MainSceneMenu = CurrentMenuIndex == 0 ? L"▶  처음으로    " : L"   처음으로    ";
-    Screen[22].replace(BaseScene::GetTextStartX(0, MainSceneMenu.length() + 4), MainSceneMenu.length() + 4, MainSceneMenu);
+    Screen[25].replace(BaseScene::GetTextStartX(0, MainSceneMenu.length() + 4), MainSceneMenu.length() + 4, MainSceneMenu);
 
     std::wstring QuitProgramMenu = CurrentMenuIndex == 1 ? L"▶      종료    " : L"       종료    ";
-    Screen[24].replace(BaseScene::GetTextStartX(0, QuitProgramMenu.length() + 2), QuitProgramMenu.length() + 2, QuitProgramMenu);
+    Screen[27].replace(BaseScene::GetTextStartX(0, QuitProgramMenu.length() + 2), QuitProgramMenu.length() + 2, QuitProgramMenu);
 
 }

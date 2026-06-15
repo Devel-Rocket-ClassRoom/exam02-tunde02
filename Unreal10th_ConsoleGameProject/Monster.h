@@ -15,10 +15,12 @@ public:
     virtual void Update() override;
     virtual void OnCollisionEnter(GameObject* Other) override;
 
+    inline MonsterType GetMonsterType() const { return MonsterType_; }
+
+private:
     void TurnAround();
     void FireBullet() const;
 
-private:
     MonsterType MonsterType_ = MonsterType::Default;
     BulletType BulletType_ = BulletType::Default;
     float MonsterShotDelay = 0.1f;

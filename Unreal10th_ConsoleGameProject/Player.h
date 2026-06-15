@@ -12,7 +12,7 @@ private:
     BulletType CurrentBulletType = BulletType::Default;
 
     PlayerState CurrentPlayerState = PlayerState::Normal;
-    const float InvincibleDuration = 0.7f;
+    const float InvincibleDuration = 0.5f;
     float InvincibleTimer = 0.0f;
 
 

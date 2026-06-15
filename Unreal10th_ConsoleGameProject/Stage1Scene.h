@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "BaseScene.h"
+#include "Monster.h"
 #include <Windows.h>
+#include <vector>
 
 class Stage1Scene : public BaseScene
 {
@@ -15,7 +17,7 @@ public:
 private:
     float StageTimer = 0.0f;
     bool bIsBossSpawned = false;
-    bool bIsStageCleared = false;
+    bool bIsStageFinished = false;
     GameObject* BossMonster = nullptr;
 
     const int MenuCount = 2;
@@ -29,4 +31,26 @@ private:
     void ProcessKeyPress(int InKeyCode);
     void RenderStatus();
     void RenderStageClearMenu();
+
+    inline bool IsPlayerAlive()
+    {
+        return std::find_if(
+            SceneObjects.begin(),
+            SceneObjects.end(),
+            [](GameObject* Obj)
+            {
+                return Obj->GetCollisionLayer() == CollisionLayer::Player;
+            }) != SceneObjects.end();
+    }
+    inline bool IsBossAlive()
+    {
+        return std::find_if(
+            SceneObjects.begin(),
+            SceneObjects.end(),
+            [](GameObject* Obj)
+            {
+                return (Obj->GetCollisionLayer() == CollisionLayer::Monster)
+                    && static_cast<Monster*>(Obj)->GetMonsterType() == MonsterType::Boss;
+            }) != SceneObjects.end();
+    }
 };
