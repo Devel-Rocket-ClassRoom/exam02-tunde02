@@ -256,7 +256,6 @@ void BaseScene::Render()
 {
     InitializeScreen();
     RenderSceneObjects();
-    RenderStatus();
     PrintScreen();
 }
 
@@ -495,97 +494,6 @@ void BaseScene::RenderSceneObjects()
                 }
             }
         }
-    }
-
-    //if (Player_ == nullptr || Player_->IsDestroyed()) return;
-
-    //for (size_t i = 0; i < Player_->GetHeight(); i++)
-    //{
-    //    for (size_t j = 0; j < Player_->GetWidth(); j++)
-    //    {
-    //        auto [PositionX, PositionY] = Player_->GetPosition().ToRoundInt();
-    //        if (Screen[PositionY + i][PositionX + j] == L' '
-    //            && Player_->GetRenderingVector()[i][j] != L' ')
-    //        {
-    //            Screen[PositionY + i][PositionX + j] = Player_->GetRenderingVector()[i][j];
-    //        }
-    //    }
-    //}
-}
-
-void BaseScene::RenderStatus()
-{
-    const size_t StatusStartX = 61;
-
-    // 위, 아래 테두리
-    for (size_t i = 0; i < Width_; i++)
-    {
-        Screen[0][i] = L'█';
-        Screen[Height_ - 2][i] = L'█';
-    }
-
-    // 왼쪽 테두리
-    for (size_t i = 1; i < Height_ - 2; i++)
-    {
-        Screen[i][0] = L'█';
-    }
-
-    // 가운데 테두리
-    for (size_t i = 1; i < Height_ - 2; i++)
-    {
-        Screen[i][RealWidth] = L'█';
-    }
-
-    // 오른쪽 테두리
-    for (size_t i = 1; i < Height_ - 2; i++)
-    {
-        Screen[i][Width_ - 1] = L'█';
-    }
-
-    // 스테이지
-    std::wstring StageTextStr = L"S T A G E";
-    Screen[3].replace(GetTextStartX(StatusStartX, StageTextStr.length()), StageTextStr.length(), StageTextStr);
-
-    std::wstring StageNumberStr = L"1";
-    Screen[5].replace(GetTextStartX(StatusStartX, StageNumberStr.length()), StageNumberStr.length(), StageNumberStr);
-
-    for (size_t i = StatusStartX; i < Width_; i++)
-    {
-        Screen[8][i] = L'█';
-    }
-
-    // 점수
-    std::wstring ScoreTextStr = L"S C O R E";
-    Screen[11].replace(GetTextStartX(StatusStartX, ScoreTextStr.length()), ScoreTextStr.length(), ScoreTextStr);
-
-    std::wstring ScoreNumberStr = std::to_wstring(Score);
-    Screen[13].replace(GetTextStartX(StatusStartX, ScoreNumberStr.length()), ScoreNumberStr.length(), ScoreNumberStr);
-
-    for (size_t i = StatusStartX; i < Width_; i++)
-    {
-        Screen[16][i] = L'█';
-    }
-
-    // 플레이어 체력
-    std::wstring PlayerTextStr = L"P L A Y E R";
-    Screen[19].replace(GetTextStartX(StatusStartX, PlayerTextStr.length()), PlayerTextStr.length(), PlayerTextStr);
-
-    std::wstring PlayerHpStr = L"";
-    for (int i = 0; i < Player_->GetHp() - 1; i++)
-    {
-        PlayerHpStr += L"♡ ";
-    }
-
-    if (Player_->GetHp() > 0)
-    {
-        PlayerHpStr += L"♡";
-    }
-
-    Screen[21].replace(GetTextStartX(StatusStartX, PlayerHpStr.length()), PlayerHpStr.length(), PlayerHpStr);
-
-    for (size_t i = StatusStartX; i < Width_; i++)
-    {
-        Screen[24][i] = L'█';
     }
 }
 

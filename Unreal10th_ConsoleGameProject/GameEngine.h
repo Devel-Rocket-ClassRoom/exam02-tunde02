@@ -15,13 +15,15 @@ public:
 
     // 전역 어디서나 단 하나의 원본 객체에 접근할 수 있는 통로 (Meyers' Singleton)
     static GameEngine& Instance();
-    void ChangeScene(BaseScene* newScene);
+    void AddNewScene(BaseScene* Scene);
+    void ChangeScene(BaseScene* Scene);
+    void ChangeScene(SceneType InSceneType);
     void Run();
     void Update();
     void Render();
     void SetCursorPosition(int X, int Y);
-    GameObject* Instantiate(GameObject* InGameObject, const Transform& InTransform, const Vector2& InDelta);
-    GameObject* Instantiate(const GameObjectType InGameObjectType, const Transform& InTransform, const Vector2& InDelta);
+    GameObject* Instantiate(GameObject* InGameObject, const Transform& InTransform, const Vector2& InDelta, float InTimer = 0.0f);
+    GameObject* Instantiate(const GameObjectType InGameObjectType, const Transform& InTransform, const Vector2& InDelta, float InTimer = 0.0f);
 
     inline float GetFixedDeltaTime() const { return FixedDeltaTime; }
     inline int GetScreenWidth() const { return ScreenWidth; }
@@ -33,7 +35,9 @@ private:
     int ScreenHeight = 48;
     float FixedDeltaTime = 0.0f;
     int FrameMilliseconds = 0;
-    BaseScene* currentScene = nullptr; // 현재 활성화된 씬 포인터
+    std::vector<BaseScene*> Scenes;
+    int CurrentSceneIndex = 0;
+    BaseScene* CurrentScene = nullptr; // 현재 활성화된 씬 포인터
 
     // 싱글톤 핵심: 생성자를 private으로 감춰 외부 선언 및 new 차단
     GameEngine();

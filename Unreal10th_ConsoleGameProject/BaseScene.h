@@ -33,6 +33,11 @@ protected:
     size_t RealHeight = 46;
     int Score = 0;
 
+    void InitializeScreen(const std::wstring C = L" ");
+    void RenderSceneObjects();
+    size_t GetTextStartX(const size_t UiStartX, const size_t Length) const;
+    void PrintScreen();
+
 public:
     BaseScene(int Width, int Height);
     virtual ~BaseScene();
@@ -54,11 +59,6 @@ private:
     void TryYMove(GameObject* ObjA, size_t i);
     bool CheckAABBCollision(const GameObject* ObjA, const GameObject* ObjB);
     bool CheckAABBCollision(int ObjAPosX, int ObjAPosY, size_t ObjAWidth, size_t ObjAHeight, int ObjBPosX, int ObjBPosY, size_t ObjBWidth, size_t ObjBHeight);
-    void InitializeScreen(const std::wstring C = L" ");
-    void RenderSceneObjects();
-    void RenderStatus();
-    size_t GetTextStartX(const size_t UiStartX, const size_t Length) const;
-    void PrintScreen();
 
     inline bool IsPlayerAndItem(const GameObject* ObjA, const GameObject* ObjB) {
         return (ObjA->GetCollisionLayer() == CollisionLayer::Player && ObjB->GetCollisionLayer() == CollisionLayer::Item)
