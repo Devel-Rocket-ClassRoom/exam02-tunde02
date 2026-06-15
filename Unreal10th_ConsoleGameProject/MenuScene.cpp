@@ -21,6 +21,7 @@ void MenuScene::Update()
     {
         bool CurrentPressed = (GetAsyncKeyState(Key.KeyCode) & 0x8000) != 0;
 
+        // 키를 뗐을 때만 실행되도록 설정
         if (CurrentPressed && !Key.bIsKeyPressed)
         {
             Key.bIsKeyPressed = true;

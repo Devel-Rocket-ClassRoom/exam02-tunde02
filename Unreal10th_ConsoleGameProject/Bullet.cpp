@@ -106,30 +106,15 @@ Bullet::Bullet(Faction InFaction, BulletType InBulletType)
 //}
 #endif
 
-void Bullet::Initialize(const Transform& InTransform, const Vector2& InDelta)
+void Bullet::Initialize(const Vector2& InPosition, const Vector2& InDelta)
 {
-    Transform_.Position = InTransform.Position;
+    Transform_.Position = InPosition;
     Delta_ = InDelta;
     Delta_ = Delta_.Normalized();
     //if (std::sqrt(Delta_.X * Delta_.X + Delta_.Y * Delta_.Y) > 1.0f)
     //{
     //}
     NextPosition_ = Transform_.Position;
-}
-
-void Bullet::Initialize(const Transform InTransform, const Vector2 InDelta)
-{
-    GameObject::Initialize(InTransform, InDelta);
-    RenderString_.reserve(Transform_.Width * Transform_.Height);
-    for (int i = 0; i < Transform_.Height; i++)
-    {
-        std::wstring Str{};
-        for (int j = 0; j < Transform_.Width; j++)
-        {
-            Str += L"█";
-        }
-        RenderString_.push_back(Str);
-    }
 }
 
 void Bullet::Update()
@@ -153,10 +138,6 @@ void Bullet::OnCollisionEnter(GameObject* Other)
              || (Other->GetCollisionLayer() == CollisionLayer::Item))
     {
         return;
-    }
-    else if (Other->GetCollisionLayer() == CollisionLayer::Wall)
-    {
-        Destroy();
     }
     else if (Other->GetFaction() != Faction_)
     {

@@ -4,8 +4,6 @@
 #include "Monster.h"
 #include "Bullet.h"
 
-#define USE_COLLISION_EXIT 0
-
 BaseScene::BaseScene(int Width, int Height) : Width_(Width), Height_(Height) {}
 
 BaseScene::~BaseScene()
@@ -18,48 +16,20 @@ BaseScene::~BaseScene()
     SceneObjects.clear();
 }
 
-GameObject* BaseScene::Instantiate(GameObject* InGameObject, const Transform& InTransform, const Vector2& InDelta, float InTimer)
+GameObject* BaseScene::Instantiate(GameObject* InGameObject, const Vector2& InPosition, const Vector2& InDelta, float InTimer)
 {
     GameObject* NewGameObject = InGameObject;
-    NewGameObject->Initialize(InTransform, InDelta);
+    NewGameObject->Initialize(InPosition, InDelta);
 
-    InstantiateRequests.push_back(InstantiateRequest{ NewGameObject, InTransform, InDelta, InTimer });
-
-    return NewGameObject;
-}
-
-GameObject* BaseScene::Instantiate(GameObjectType InGameObjectType, const Transform& InTransform, const Vector2& InDelta, float InTimer)
-{
-    GameObject* NewGameObject = nullptr;
-    switch (InGameObjectType)
-    {
-        case GameObjectType::Monster:
-            NewGameObject = new Monster;
-            NewGameObject->Initialize(InTransform, InDelta);
-            break;
-        case GameObjectType::Bullet:
-            NewGameObject = new Bullet;
-            NewGameObject->Initialize(InTransform, InDelta);
-            break;
-        case GameObjectType::Player:
-        case GameObjectType::None:
-        default:
-            break;
-    }
-
-    if (NewGameObject == nullptr)
-    {
-        return nullptr;
-    }
-
-    InstantiateRequests.push_back(InstantiateRequest{ NewGameObject, InTransform, InDelta, InTimer });
-    //SceneObjects.push_back(NewGameObject);
+    InstantiateRequests.push_back(InstantiateRequest{ NewGameObject, InPosition, InDelta, InTimer });
 
     return NewGameObject;
 }
 
 void BaseScene::Update()
 {
+    // 생성 요청의 타이머를 갱신
+    // 타이머가 다 됐다면 생성
     for (auto& Request : InstantiateRequests)
     {
         Request.Timer -= GameEngine::Instance().GetFixedDeltaTime();
@@ -80,7 +50,7 @@ void BaseScene::Update()
         InstantiateRequests.end()
     );
 
-    // 1. 모든 오브젝트 로직 업데이트
+    // 모든 오브젝트 로직 업데이트
     for (auto& Obj : SceneObjects)
     {
         if (!Obj->IsDestroyed())
@@ -100,134 +70,11 @@ void BaseScene::Update()
             continue;
         }
 
-        TryXMove(ObjA, i);
-        TryYMove(ObjA, i);
+        TryXMove(ObjA);
+        TryYMove(ObjA);
     }
 
-    /*
-    // 2. 충돌 검사
-#if USE_COLLISION_EXIT == 1
-    size_t SceneObjectsCount = SceneObjects.size();
-    for (size_t i = 0; i < SceneObjectsCount; i++)
-    {
-        for (size_t j = i + 1; j < SceneObjectsCount; j++)
-        {
-            GameObject* ObjA = SceneObjects[i];
-            GameObject* ObjB = SceneObjects[j];
-
-            if (ObjA->IsDestroyed() || ObjB->IsDestroyed())
-            {
-                continue;
-            }
-
-            if (CheckAABBCollision(ObjA, ObjB))
-            {
-                ObjA->AddCurrentCollision(ObjB);
-                ObjB->AddCurrentCollision(ObjA);
-            }
-        }
-    }
-
-    for (auto& Obj : SceneObjects)
-    {
-        if (Obj->IsDestroyed())
-        {
-            continue;
-        }
-
-        for (auto& CurrentCollider : Obj->GetCurrentCollisions())
-        {
-            if (CurrentCollider == nullptr || CurrentCollider->IsDestroyed())
-            {
-                continue;
-            }
-
-            if (Obj->WasCollidedWith(CurrentCollider))
-            {
-                // 현재 충돌한 오브젝트가 PrevCollisions에 있다면
-                // 계속 충돌 중이라는 뜻이므로 OnCollisionStay()
-                Obj->OnCollisionStay(CurrentCollider);
-            }
-            else
-            {
-                // 현재 충돌한 오브젝트가 PrevCollisions에 없다면
-                // 이제 충돌하기 시작했다는 뜻이므로 OnCollisionEnter()
-                Obj->OnCollisionEnter(CurrentCollider);
-            }
-        }
-
-        // 이전 프레임에 파괴된 오브젝트가 PrevCollisions에 남아있을 수 있어
-        // 에러가 발생하는 중
-        for (auto& PrevCollider : Obj->GetPrevCollisions())
-        {
-            if (PrevCollider == nullptr || PrevCollider->IsDestroyed())
-            {
-                continue;
-            }
-
-            if (!Obj->IsCollidedWith(PrevCollider))
-            {
-                // 이전에 충돌했던 오브젝트가 CurrentCollisions에 없다면
-                // 충돌을 벗어났다는 뜻이므로 OnCollisionExit()
-                Obj->OnCollisionExit(PrevCollider);
-            }
-        }
-
-        // 오브젝트의 CurrentCollisions를 PrevCollisions로 갱신
-        Obj->UpdateCollisions();
-    }
-#else
-    size_t SceneObjectsCount = SceneObjects.size();
-    for (size_t i = 0; i < SceneObjectsCount; i++)
-    {
-        for (size_t j = i + 1; j < SceneObjectsCount; j++)
-        {
-            GameObject* ObjA = SceneObjects[i];
-            GameObject* ObjB = SceneObjects[j];
-
-            if (ObjA->IsDestroyed() || ObjB->IsDestroyed())
-            {
-                continue;
-            }
-
-            if (CheckAABBCollision(ObjA, ObjB))
-            {
-                ObjA->OnCollisionEnter(ObjB);
-                ObjB->OnCollisionEnter(ObjA);
-            }
-        }
-    }
-#endif
-
-    // 3. 외곽 검사
-    for (auto& Obj : SceneObjects)
-    {
-        if (Obj->IsDestroyed())
-        {
-            continue;
-        }
-
-        if (!(0 <= Obj->GetNextMinX() && Obj->GetNextMaxX() < Width_))
-        {
-            Obj->Destroy();
-        }
-        if (!(0 <= Obj->GetNextMinY() && Obj->GetNextMaxY() < Height_))
-        {
-            Obj->Destroy();
-        }
-    }
-
-    // 4. 이동 적용
-    for (auto& obj : SceneObjects)
-    {
-        if (!obj->IsDestroyed())
-        {
-            obj->ApplyMove();
-        }
-    }
-    */
-
-    // 5. 지연 삭제 (Update 루프가 완전히 끝난 후 플래그가 켜진 오브젝트 일괄 제거)
+    // 지연 삭제 (Update 루프가 완전히 끝난 후 플래그가 켜진 오브젝트 일괄 제거)
     for (auto& Obj : SceneObjects)
     {
         if (Obj != nullptr && Obj->IsDestroyed())
@@ -259,7 +106,7 @@ void BaseScene::Render()
     PrintScreen();
 }
 
-void BaseScene::TryXMove(GameObject* ObjA, size_t i)
+void BaseScene::TryXMove(GameObject* ObjA)
 {
     auto [ObjAPosX, ObjAPosY] = ObjA->GetPosition().ToRoundInt();
     float PredictedX = ObjA->GetDelta().X * ObjA->GetSpeed();
@@ -292,9 +139,9 @@ void BaseScene::TryXMove(GameObject* ObjA, size_t i)
             ObjA->OnCollisionEnter(nullptr);
             return;
         }
-        else if (IntNextX + ObjA->GetWidth() > RealWidth)
+        else if (IntNextX + ObjA->GetWidth() > GameAreaWidth)
         {
-            ObjA->SetPosition({ static_cast<float>(RealWidth - ObjA->GetWidth()), ObjA->GetPosition().Y });
+            ObjA->SetPosition({ static_cast<float>(GameAreaWidth - ObjA->GetWidth()), ObjA->GetPosition().Y });
             ObjA->OnCollisionEnter(nullptr);
             return;
         }
@@ -310,10 +157,15 @@ void BaseScene::TryXMove(GameObject* ObjA, size_t i)
 
             GameObject* ObjB = SceneObjects[j];
 
+            // 1. 충돌 가능한 상태인가
+            // 2. 충돌 레이어가 서로 다른가
+            // 3. 오브젝트가 서로 다른 진영인가
+            // 세 가지 조건을 만족해야만 충돌 검사 진행
             if (!(ObjA->CanCollide() && ObjB->CanCollide())
                 || ObjA->GetCollisionLayer() == ObjB->GetCollisionLayer()
                 || ObjA->GetFaction() == ObjB->GetFaction())
             {
+                // 플레이어와 아이템의 경우는 예외
                 if (!IsPlayerAndItem(ObjA, ObjB))
                 {
                     continue;
@@ -334,7 +186,7 @@ void BaseScene::TryXMove(GameObject* ObjA, size_t i)
     }
 }
 
-void BaseScene::TryYMove(GameObject* ObjA, size_t i)
+void BaseScene::TryYMove(GameObject* ObjA)
 {
     auto [ObjAPosX, ObjAPosY] = ObjA->GetPosition().ToRoundInt();
     float PredictedY = ObjA->GetDelta().Y * ObjA->GetSpeed();
@@ -367,9 +219,9 @@ void BaseScene::TryYMove(GameObject* ObjA, size_t i)
             ObjA->OnCollisionEnter(nullptr);
             return;
         }
-        else if (IntNextY + ObjA->GetHeight() > RealHeight)
+        else if (IntNextY + ObjA->GetHeight() > GameAreaHeight)
         {
-            ObjA->SetPosition({ ObjA->GetPosition().X, static_cast<float>(RealHeight - ObjA->GetHeight()) });
+            ObjA->SetPosition({ ObjA->GetPosition().X, static_cast<float>(GameAreaHeight - ObjA->GetHeight()) });
             ObjA->OnCollisionEnter(nullptr);
             return;
         }
@@ -385,10 +237,15 @@ void BaseScene::TryYMove(GameObject* ObjA, size_t i)
 
             GameObject* ObjB = SceneObjects[j];
 
+            // 1. 충돌 가능한 상태인가
+            // 2. 충돌 레이어가 서로 다른가
+            // 3. 오브젝트가 서로 다른 진영인가
+            // 세 가지 조건을 만족해야만 충돌 검사 진행
             if (!(ObjA->CanCollide() && ObjB->CanCollide())
                 || ObjA->GetCollisionLayer() == ObjB->GetCollisionLayer()
                 || ObjA->GetFaction() == ObjB->GetFaction())
             {
+                // 플레이어와 아이템의 경우는 예외
                 if (!IsPlayerAndItem(ObjA, ObjB))
                 {
                     continue;
@@ -407,31 +264,6 @@ void BaseScene::TryYMove(GameObject* ObjA, size_t i)
 
         ObjA->ApplyYMove(StepY);
     }
-}
-
-bool BaseScene::CheckAABBCollision(const GameObject* ObjA, const GameObject* ObjB)
-{
-    if (ObjA->GetNextMaxX() <= ObjB->GetNextMinX())
-    {
-        return false;
-    }
-
-    if (ObjB->GetNextMaxX() <= ObjA->GetNextMinX())
-    {
-        return false;
-    }
-
-    if (ObjA->GetNextMaxY() <= ObjB->GetNextMinY())
-    {
-        return false;
-    }
-
-    if (ObjB->GetNextMaxY() <= ObjA->GetNextMinY())
-    {
-        return false;
-    }
-
-    return true;
 }
 
 bool BaseScene::CheckAABBCollision(int ObjAPosX, int ObjAPosY, size_t ObjAWidth, size_t ObjAHeight, int ObjBPosX, int ObjBPosY, size_t ObjBWidth, size_t ObjBHeight)
@@ -476,7 +308,6 @@ void BaseScene::RenderSceneObjects()
 {
     for (auto& obj : SceneObjects)
     {
-        //if (obj->IsDestroyed() || obj == Player_)
         if (obj->IsDestroyed())
         {
             continue;

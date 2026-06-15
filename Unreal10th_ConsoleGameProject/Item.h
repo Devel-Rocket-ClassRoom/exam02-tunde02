@@ -8,7 +8,7 @@ class Item : public GameObject
 public:
     Item(ItemType InItemType);
 
-    virtual void Initialize(const Transform& InTransform, const Vector2& InDelta) override;
+    virtual void Initialize(const Vector2& InPosition, const Vector2& InDelta) override;
     virtual void Update() override;
     virtual void OnCollisionEnter(GameObject* Other) override;
 

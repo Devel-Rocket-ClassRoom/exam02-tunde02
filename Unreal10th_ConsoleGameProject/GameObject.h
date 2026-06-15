@@ -12,53 +12,68 @@ class GameObject
 public:
     virtual ~GameObject() = default;
 
-    // Instantiate Function
-    virtual void Initialize(const Transform& InTransform, const Vector2& InDelta);
+    /// <summary>
+    /// 씬에 생성됐을 때 실행될 초기화 함수
+    /// </summary>
+    /// <param name="InPosition">생성될 위치</param>
+    /// <param name="InDelta">생성 시 가질 운동 방향</param>
+    virtual void Initialize(const Vector2& InPosition, const Vector2& InDelta);
 
-    // Engine Functions
+    /// <summary>
+    /// 씬에 의해 매 프레임 실행될 로직 함수
+    /// </summary>
     virtual void Update() = 0;
-    virtual void ApplyMove();
-    virtual void ApplyMove(float InX, float InY);
-    virtual void ApplyXMove(float InX);
-    virtual void ApplyYMove(float InY);
-    virtual void CancelMove();
-    virtual void CancelXMove();
-    virtual void CancelYMove();
-    virtual void Render() {}
-    virtual void OnCollisionEnter(GameObject* Other) {}
-    virtual void OnCollisionStay(GameObject* Other) {}
-    virtual void OnCollisionExit(GameObject* Other) {}
-    virtual void TakeDamage(int InDamage);
 
-    void UpdateCollisions();
+    /// <summary>
+    /// X축 방향으로 InX만큼 이동하는 함수
+    /// </summary>
+    /// <param name="InX">이동할 X축 길이</param>
+    virtual void ApplyXMove(float InX);
+
+    /// <summary>
+    /// Y축 방향으로 InX만큼 이동하는 함수
+    /// </summary>
+    /// <param name="InY">이동할 Y축 길이</param>
+    virtual void ApplyYMove(float InY);
+
+    /// <summary>
+    /// 씰에 의해 매 프레임 실행될 렌더링 함수
+    /// </summary>
+    virtual void Render() {}
+
+    /// <summary>
+    /// 충돌이 감지되면 씬에 의해 실행되는 함수
+    /// </summary>
+    /// <param name="Other">GameObject 포인터 형식의 충돌한 오브젝트</param>
+    virtual void OnCollisionEnter(GameObject* Other) {}
+
+    /// <summary>
+    /// InDamage 만큼 피해를 입는 함수
+    /// </summary>
+    /// <param name="InDamage">입을 피해량</param>
+    virtual void TakeDamage(int InDamage);
 
     inline void Destroy() { Transform_.Width = 0; Transform_.Height = 0; bIsDestroyed_ = true; }
     inline bool IsDestroyed() const { return bIsDestroyed_; }
+
+    /// <summary>
+    /// 오브젝트가 현재 충돌할 수 있는 상태인지 반환하는 함수
+    /// </summary>
+    /// <returns>충돌할 수 있다면 true, 아니라면 false</returns>
     inline bool CanCollide() const { return bCanCollide; }
-    inline void AddCurrentCollision(GameObject* Other) { CurrentCollisions.insert(Other); }
-    inline bool WasCollidedWith(GameObject* Other) { return PrevCollisions.count(Other) > 0; }
-    inline bool IsCollidedWith(GameObject* Other) { return CurrentCollisions.count(Other) > 0; }
 
     inline CollisionLayer GetCollisionLayer() const { return CollisionLayer_; }
     inline Faction GetFaction() const { return Faction_; }
-    inline std::unordered_set<GameObject*> GetCurrentCollisions() const { return CurrentCollisions; }
-    inline std::unordered_set<GameObject*> GetPrevCollisions() const { return PrevCollisions; }
     inline Transform GetTransform() const { return Transform_; }
     inline Vector2 GetPosition() const { return Transform_.Position; }
     inline void SetPosition(Vector2 InPosition) { Transform_.Position = InPosition; }
     inline size_t GetWidth() const { return Transform_.Width; }
     inline size_t GetHeight() const { return Transform_.Height; }
-    inline int GetNextMinX() const { return static_cast<int>(NextPosition_.X); }
-    inline int GetNextMaxX() const { return static_cast<int>(NextPosition_.X) + static_cast<int>(Transform_.Width); }
-    inline int GetNextMinY() const { return static_cast<int>(NextPosition_.Y); }
-    inline int GetNextMaxY() const { return static_cast<int>(NextPosition_.Y) + static_cast<int>(Transform_.Height); }
+
     inline Vector2 GetDelta() const { return Delta_; }
     inline void SetDelta(Vector2 InDelta) { Delta_ = InDelta; }
     inline float GetSpeed() const { return Speed; }
     inline void SetSpeed(float InSpeed) { Speed = InSpeed; }
-    inline Direction GetDeltaDirection() const { return DeltaDirection; }
-    inline void AddDeltaDirection(Direction InDirection) { DeltaDirection = DeltaDirection | InDirection; }
-    inline void SubDeltaDirection(Direction InDirection) { DeltaDirection = DeltaDirection & ~InDirection; }
     inline int GetHp() const { return Hp; }
     inline void SetHp(int InHp) { Hp = InHp; }
     inline int GetDamage() const { return Damage; }
@@ -68,20 +83,16 @@ public:
 protected:
     Transform Transform_{};
     Vector2 Delta_{};
-    Direction DeltaDirection = Direction::None;
     Vector2 NextPosition_{};
     CollisionLayer CollisionLayer_ = CollisionLayer::None;
-    //Collider Collider_{};
     Faction Faction_ = Faction::None;
-    std::unordered_set<GameObject*> CurrentCollisions;
-    std::unordered_set<GameObject*> PrevCollisions;
     int Hp = 0;
     int Damage = 0;
     float Speed = 0.0f;
     bool bIsDestroyed_ = false; // 지연 삭제용 플래그
-    bool bCanCollide = true;
-    float UpdatePeriod_ = 0.0f;
-    float UpdateTimer_ = 0.0f;
+    bool bCanCollide = true; // 충돌 가능 여부 플래그
+    float UpdatePeriod_ = 0.0f; // 업데이트 함수를 호출할 주기
+    float UpdateTimer_ = 0.0f; // 업데이트 함수를 호출하기 위해 사용하는 타이머
     std::vector<std::wstring> RenderString_;
 
     inline void UpdateNextPosition() { NextPosition_ = Transform_.Position + Delta_; }

@@ -17,9 +17,9 @@ Item::Item(ItemType InItemType)
     RenderString_ = Spec.RenderString;
 }
 
-void Item::Initialize(const Transform& InTransform, const Vector2& InDelta)
+void Item::Initialize(const Vector2& InPosition, const Vector2& InDelta)
 {
-    Transform_.Position = InTransform.Position;
+    Transform_.Position = InPosition;
     Delta_ = InDelta;
     NextPosition_ = Transform_.Position;
 }

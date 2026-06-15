@@ -1,5 +1,4 @@
 ﻿#pragma once
-//#include "BitFlags.h" // 다른 라이브러리의 비트 플래그 연산까지 덮어써버리는 것 같음
 #include <type_traits>
 #include <vector>
 #include <string>
@@ -52,20 +51,19 @@ enum class CollisionLayer
 {
     None,
     Player,
-    Wall,
     Monster,
     Bullet,
     Item
 };
 
-enum class Direction
-{
-    None = 0,
-    Up = 1 << 0,
-    Down = 1 << 1,
-    Left = 1 << 2,
-    Right = 1 << 3
-};
+//enum class Direction
+//{
+//    None = 0,
+//    Up = 1 << 0,
+//    Down = 1 << 1,
+//    Left = 1 << 2,
+//    Right = 1 << 3
+//};
 
 enum class Faction
 {
@@ -93,10 +91,18 @@ struct Vector2
     Vector2 operator*(const int multiplier) const;
     Vector2& operator=(const Vector2& other);
 
-    //std::pair<int, int> ToRoundInt() const { return { static_cast<int>(X), static_cast<int>(Y) }; }
-    //std::pair<int, int> ToRoundInt() const { return { static_cast<int>(std::round(X)), static_cast<int>(std::round(Y)) }; }
+    /// <summary>
+    /// float 데이터 값을 좌표에 사용하기 위해 소수점을 버린 값을 반환하는 함수
+    /// </summary>
+    /// <returns>소수점을 버린 {X, Y} pair</returns>
     inline std::pair<int, int> ToRoundInt() const { return { static_cast<int>(std::floor(X)), static_cast<int>(std::floor(Y)) }; }
-    inline Vector2 Normalized() const {
+
+    /// <summary>
+    /// 현재 벡터를 단위 벡터 형태로 반환하는 함수
+    /// </summary>
+    /// <returns>단위 벡터로 변경된 Vector2</returns>
+    inline Vector2 Normalized() const
+    {
         Vector2 NormalizedVector2{};
         float len = std::sqrt(X * X + Y * Y);
 
@@ -122,78 +128,67 @@ struct Transform
     size_t Height = 0;
 
     Transform() = default;
-    Transform(const Vector2& InPosition, size_t InWidth, size_t InHeight) : Position(InPosition), Width(InWidth), Height(InHeight) {}
+    //Transform(const Vector2& InPosition, size_t InWidth, size_t InHeight) : Position(InPosition), Width(InWidth), Height(InHeight) {}
     Transform(float InX, float InY, size_t InWidth, size_t InHeight);
 
     Transform& operator=(const Transform& other);
 };
 
-struct Collider
-{
-    size_t Width = 0;
-    size_t Height = 0;
-    CollisionLayer Layer = CollisionLayer::None;
+//struct Collider
+//{
+//    size_t Width = 0;
+//    size_t Height = 0;
+//    CollisionLayer Layer = CollisionLayer::None;
+//
+//    Collider() = default;
+//    Collider(size_t InWidth, size_t InHeight, CollisionLayer InLayer);
+//    Collider(const Transform& InTransform, CollisionLayer InLayer);
+//};
 
-    Collider() = default;
-    Collider(size_t InWidth, size_t InHeight, CollisionLayer InLayer);
-    Collider(const Transform& InTransform, CollisionLayer InLayer);
-};
-
-inline Direction operator&(Direction Left, Direction Right)
-{
-    return static_cast<Direction>(
-        static_cast<std::underlying_type_t<Direction>>(Left)
-        & static_cast<std::underlying_type_t<Direction>>(Right));
-}
-
-inline Direction operator|(Direction Left, Direction Right)
-{
-    return static_cast<Direction>(
-        static_cast<std::underlying_type_t<Direction>>(Left)
-        | static_cast<std::underlying_type_t<Direction>>(Right));
-}
-
-inline Direction operator~(Direction InDirection)
-{
-    return static_cast<Direction>(~static_cast<std::underlying_type_t<Direction>>(InDirection));
-}
-
-inline bool HasFlag(Direction InDirection, Direction Flag)
-{
-    return (static_cast<std::underlying_type_t<Direction>>(InDirection) & static_cast<std::underlying_type_t<Direction>>(Flag)) != 0;
-}
-
-inline Vector2 CalcDeltaVector(Direction InDirection)
-{
-    Vector2 Delta{};
-
-    if (HasFlag(InDirection, Direction::Up))
-    {
-        Delta = Delta + Vector2{ 0, -1 };
-    }
-    if (HasFlag(InDirection, Direction::Down))
-    {
-        Delta = Delta + Vector2{ 0, 1 };
-    }
-    if (HasFlag(InDirection, Direction::Left))
-    {
-        Delta = Delta + Vector2{ -1, 0 };
-    }
-    if (HasFlag(InDirection, Direction::Right))
-    {
-        Delta = Delta + Vector2{ 1, 0 };
-    }
-
-    return Delta;
-}
-
-class Logger
-{
-public:
-    static std::vector<std::string> Logs;
-
-    static void Log(const std::string InLog);
-    static void Log(int InRow, const std::string InLog);
-    static void AppendLog(int InRow, const std::string InLog);
-    static void PrintLog();
-};
+//inline Direction operator&(Direction Left, Direction Right)
+//{
+//    return static_cast<Direction>(
+//        static_cast<std::underlying_type_t<Direction>>(Left)
+//        & static_cast<std::underlying_type_t<Direction>>(Right));
+//}
+//
+//inline Direction operator|(Direction Left, Direction Right)
+//{
+//    return static_cast<Direction>(
+//        static_cast<std::underlying_type_t<Direction>>(Left)
+//        | static_cast<std::underlying_type_t<Direction>>(Right));
+//}
+//
+//inline Direction operator~(Direction InDirection)
+//{
+//    return static_cast<Direction>(~static_cast<std::underlying_type_t<Direction>>(InDirection));
+//}
+//
+//inline bool HasFlag(Direction InDirection, Direction Flag)
+//{
+//    return (static_cast<std::underlying_type_t<Direction>>(InDirection) & static_cast<std::underlying_type_t<Direction>>(Flag)) != 0;
+//}
+//
+//inline Vector2 CalcDeltaVector(Direction InDirection)
+//{
+//    Vector2 Delta{};
+//
+//    if (HasFlag(InDirection, Direction::Up))
+//    {
+//        Delta = Delta + Vector2{ 0, -1 };
+//    }
+//    if (HasFlag(InDirection, Direction::Down))
+//    {
+//        Delta = Delta + Vector2{ 0, 1 };
+//    }
+//    if (HasFlag(InDirection, Direction::Left))
+//    {
+//        Delta = Delta + Vector2{ -1, 0 };
+//    }
+//    if (HasFlag(InDirection, Direction::Right))
+//    {
+//        Delta = Delta + Vector2{ 1, 0 };
+//    }
+//
+//    return Delta;
+//}

@@ -61,26 +61,6 @@ void Player::Update()
 
     Delta_ = Delta_.Normalized();
 
-#if 0
-    if (GetAsyncKeyState(VK_UP)) // ↑
-    {
-        AddDeltaDirection(Direction::Up);
-    }
-    else if (GetAsyncKeyState(VK_DOWN)) // ↓
-    {
-        AddDeltaDirection(Direction::Down);
-    }
-
-    if (GetAsyncKeyState(VK_LEFT)) // ←
-    {
-        AddDeltaDirection(Direction::Left);
-    }
-    else if (GetAsyncKeyState(VK_RIGHT)) // →
-    {
-        AddDeltaDirection(Direction::Right);
-    }
-#endif
-
     if (GetAsyncKeyState(VK_SPACE) && CurrentPlayerState != PlayerState::Uncontrollable)
     {
         if (ShotDelay <= 0.0f)
@@ -93,19 +73,11 @@ void Player::Update()
     UpdateNextPosition();
 }
 
-void Player::OnCollisionEnter(GameObject* Other)
-{
-
-}
-
-void Player::OnCollisionExit(GameObject* Other)
-{
-}
-
 void Player::TakeDamage(int InDamage)
 {
     if (CurrentPlayerState == PlayerState::Invincible)
     {
+        // 플레이어가 무적 상태라면 데미지를 받지 않고 함수 종료
         return;
     }
 
@@ -120,16 +92,16 @@ void Player::FireBullet() const
     // - OffsetX : Player.Width/2 - Bullet.Width/2
     // - OffsetY : -Bullet.Height
     Bullet* FiredBullet = new Bullet(Faction_, CurrentBulletType);
+    Vector2 BulletPosition{};
     Vector2 BulletDelta{ 0, -1 };
-    Transform BulletTransform{};
 
     auto [RoundedPosX, RoundedPosY] = Transform_.Position.ToRoundInt();
     auto [RoundedDeltaX, RoundedDeltaY] = Delta_.ToRoundInt();
 
-    BulletTransform.Position.X = static_cast<float>(RoundedPosX + RoundedDeltaX + static_cast<int>((Transform_.Width / 2) - (FiredBullet->GetWidth() / 2)));
-    BulletTransform.Position.Y = static_cast<float>(RoundedPosY + RoundedDeltaY - static_cast<int>(FiredBullet->GetHeight())) + 1.0f;
+    BulletPosition.X = static_cast<float>(RoundedPosX + RoundedDeltaX + static_cast<int>((Transform_.Width / 2) - (FiredBullet->GetWidth() / 2)));
+    BulletPosition.Y = static_cast<float>(RoundedPosY + RoundedDeltaY - static_cast<int>(FiredBullet->GetHeight())) + 1.0f;
 
-    GameEngine::Instance().Instantiate(FiredBullet, BulletTransform, BulletDelta);
+    GameEngine::Instance().Instantiate(FiredBullet, BulletPosition, BulletDelta);
 }
 
 void Player::RecoverHp(int InAmount)

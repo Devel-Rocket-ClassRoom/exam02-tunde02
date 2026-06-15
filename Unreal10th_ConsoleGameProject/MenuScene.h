@@ -22,5 +22,9 @@ private:
         { VK_RETURN, false }
     };
 
+    /// <summary>
+    /// 위, 아래 방향키, 엔터 키에 따라 할당된 동작을 수행하는 함수
+    /// </summary>
+    /// <param name="InKeyCode">입력된 키 코드</param>
     void ProcessKeyPress(int InKeyCode);
 };

@@ -66,60 +66,16 @@ Transform& Transform::operator=(const Transform& other)
     return *this;
 }
 
-Collider::Collider(size_t InWidth, size_t InHeight, CollisionLayer InLayer)
-{
-    Width = InWidth;
-    Height = InHeight;
-    Layer = InLayer;
-}
-
-Collider::Collider(const Transform& InTransform, CollisionLayer InLayer)
-{
-    Width = InTransform.Width;
-    Height = InTransform.Height;
-    Layer = InLayer;
-}
-
-std::vector<std::string> Logger::Logs;
-
-void Logger::Log(const std::string InLog)
-{
-    Logs.push_back(InLog);
-    PrintLog();
-}
-
-void Logger::Log(int InRow, const std::string InLog)
-{
-    if (Logs.size() > InRow)
-    {
-        Logs[InRow] = InLog;
-    }
-    else
-    {
-        Logs.push_back(InLog);
-    }
-    PrintLog();
-}
-
-void Logger::AppendLog(int InRow, const std::string InLog)
-{
-    Logs[InRow] += InLog;
-    PrintLog();
-}
-
-void Logger::PrintLog()
-{
-    GameEngine::Instance().SetCursorPosition(0, 26);
-    for (int i = 0; i < 10; i++)
-    {
-        printf("          ");
-    }
-    GameEngine::Instance().SetCursorPosition(0, 26);
-
-    size_t Size = Logs.size();
-    printf("[From Logger] ");
-    for (size_t i = 0; i < Size; i++)
-    {
-        printf("%s\n", Logs[i].c_str());
-    }
-}
+//Collider::Collider(size_t InWidth, size_t InHeight, CollisionLayer InLayer)
+//{
+//    Width = InWidth;
+//    Height = InHeight;
+//    Layer = InLayer;
+//}
+//
+//Collider::Collider(const Transform& InTransform, CollisionLayer InLayer)
+//{
+//    Width = InTransform.Width;
+//    Height = InTransform.Height;
+//    Layer = InLayer;
+//}
