@@ -20,6 +20,14 @@ Monster::Monster()
     RenderString_ = Spec.RenderString;
 }
 
+Monster::~Monster()
+{
+    if (MonsterType_ == MonsterType::Boss)
+    {
+        printf("bye boss");
+    }
+}
+
 #if 0
 Monster::Monster(int InX, int InY)
 {
@@ -79,7 +87,10 @@ Monster::Monster(MonsterType InMonsterType, Vector2 InDelta)
     Transform_.Width = Spec.Width;
     Transform_.Height = Spec.Height;
     Delta_ = InDelta;
-    NormalizeDelta();
+    if (std::sqrt(Delta_.X * Delta_.X + Delta_.Y * Delta_.Y) > 1.0f)
+    {
+        Delta_ = Delta_.Normalized();
+    }
     CollisionLayer_ = CollisionLayer::Monster;
     Faction_ = Faction::Monster;
     Hp = Spec.Hp;
@@ -95,7 +106,10 @@ void Monster::Initialize(const Transform& InTransform, const Vector2& InDelta)
 {
     Transform_.Position = InTransform.Position;
     Delta_ = InDelta;
-    NormalizeDelta();
+    if (std::sqrt(Delta_.X * Delta_.X + Delta_.Y * Delta_.Y) > 1.0f)
+    {
+        Delta_ = Delta_.Normalized();
+    }
     NextPosition_ = Transform_.Position;
 }
 
@@ -232,6 +246,90 @@ void Monster::FireBullet() const
     }
     else if (MonsterType_ == MonsterType::Boss)
     {
-        // TODO:
+        Bullet* FiredBullet = new Bullet(Faction_, BulletType_);
+        Transform BulletTransform{};
+        Transform MidBarrel{};
+        Transform LeftWing{};
+        Transform RightWing{};
+        Transform RandomBarrel[12]{};
+        Vector2 BulletDelta{ 0, 1 };
+
+        auto [RoundedPosX, RoundedPosY] = Transform_.Position.ToRoundInt();
+        auto [RoundedDeltaX, RoundedDeltaY] = Delta_.ToRoundInt();
+
+        // Mid
+        MidBarrel.Position.X = RoundedPosX + RoundedDeltaX + static_cast<float>(Transform_.Width / 2);
+        MidBarrel.Position.Y = RoundedPosY + RoundedDeltaY + 8.0f;
+
+        GameEngine::Instance().Instantiate(new Bullet(Faction_, BulletType::Upgrade_3), { MidBarrel.Position.X - 2, MidBarrel.Position.Y, 0, 0 }, { 0.0f, 1.0f });
+
+        // Left Wing
+        LeftWing.Position.X = MidBarrel.Position.X - 14;
+        LeftWing.Position.Y = MidBarrel.Position.Y + 4;
+
+        GameEngine::Instance().Instantiate(new Bullet(Faction_, BulletType::Upgrade_2), LeftWing, { 0.0f, 1.0f });
+
+        // Right Wing
+        RightWing.Position.X = MidBarrel.Position.X + 10;
+        RightWing.Position.Y = MidBarrel.Position.Y + 4;
+
+        GameEngine::Instance().Instantiate(new Bullet(Faction_, BulletType::Upgrade_2), RightWing, { 0.0f, 1.0f });
+
+        // Left Random Barrel
+        RandomBarrel[0].Position.X = MidBarrel.Position.X - 20;
+        RandomBarrel[0].Position.Y = RoundedPosY + RoundedDeltaY + 7.0f;
+        RandomBarrel[1].Position.X = MidBarrel.Position.X - 16;
+        RandomBarrel[1].Position.Y = RoundedPosY + RoundedDeltaY + 8.0f;
+        RandomBarrel[2].Position.X = MidBarrel.Position.X - 16;
+        RandomBarrel[2].Position.Y = RoundedPosY + RoundedDeltaY + 11.0f;
+        RandomBarrel[3].Position.X = MidBarrel.Position.X - 9;
+        RandomBarrel[3].Position.Y = RoundedPosY + RoundedDeltaY + 10.0f;
+        RandomBarrel[4].Position.X = MidBarrel.Position.X - 6;
+        RandomBarrel[4].Position.Y = RoundedPosY + RoundedDeltaY + 11.0f;
+        RandomBarrel[5].Position.X = MidBarrel.Position.X - 7;
+        RandomBarrel[5].Position.Y = RoundedPosY + RoundedDeltaY + 12.0f;
+
+        //Right Random Barrel
+        RandomBarrel[6].Position.X = MidBarrel.Position.X + 20;
+        RandomBarrel[6].Position.Y = RoundedPosY + RoundedDeltaY + 7.0f;
+        RandomBarrel[7].Position.X = MidBarrel.Position.X + 16;
+        RandomBarrel[7].Position.Y = RoundedPosY + RoundedDeltaY + 8.0f;
+        RandomBarrel[8].Position.X = MidBarrel.Position.X + 16;
+        RandomBarrel[8].Position.Y = RoundedPosY + RoundedDeltaY + 11.0f;
+        RandomBarrel[9].Position.X = MidBarrel.Position.X + 9;
+        RandomBarrel[9].Position.Y = RoundedPosY + RoundedDeltaY + 10.0f;
+        RandomBarrel[10].Position.X = MidBarrel.Position.X + 6;
+        RandomBarrel[10].Position.Y = RoundedPosY + RoundedDeltaY + 11.0f;
+        RandomBarrel[11].Position.X = MidBarrel.Position.X + 7;
+        RandomBarrel[11].Position.Y = RoundedPosY + RoundedDeltaY + 12.0f;
+
+        for (int i = 0; i < 3; i++)
+        {
+            float RandomDeltaX = (float)rand() / (float)RAND_MAX * -1.0f;
+            float RandomDeltaY = (float)rand() / (float)RAND_MAX;
+            float RandomTimer = ((float)rand() / (float)RAND_MAX) / 2;
+            GameEngine::Instance().Instantiate(new Bullet(Faction_, BulletType::Default), RandomBarrel[i], { RandomDeltaX, RandomDeltaY }, RandomTimer);
+        }
+        for (int i = 3; i < 6; i++)
+        {
+            float RandomDeltaX = (float)rand() / (float)RAND_MAX;
+            float RandomDeltaY = (float)rand() / (float)RAND_MAX;
+            float RandomTimer = ((float)rand() / (float)RAND_MAX) / 2;
+            GameEngine::Instance().Instantiate(new Bullet(Faction_, BulletType::Default), RandomBarrel[i], { RandomDeltaX, RandomDeltaY }, RandomTimer);
+        }
+        for (int i = 6; i < 9; i++)
+        {
+            float RandomDeltaX = (float)rand() / (float)RAND_MAX * -1.0f;
+            float RandomDeltaY = (float)rand() / (float)RAND_MAX;
+            float RandomTimer = ((float)rand() / (float)RAND_MAX) / 2;
+            GameEngine::Instance().Instantiate(new Bullet(Faction_, BulletType::Default), RandomBarrel[i], { RandomDeltaX, RandomDeltaY }, RandomTimer);
+        }
+        for (int i = 9; i < 12; i++)
+        {
+            float RandomDeltaX = (float)rand() / (float)RAND_MAX;
+            float RandomDeltaY = (float)rand() / (float)RAND_MAX;
+            float RandomTimer = ((float)rand() / (float)RAND_MAX) / 2;
+            GameEngine::Instance().Instantiate(new Bullet(Faction_, BulletType::Default), RandomBarrel[i], { RandomDeltaX, RandomDeltaY }, RandomTimer);
+        }
     }
 }

@@ -59,7 +59,7 @@ void Player::Update()
         Delta_.X = 1.0f;
     }
 
-    NormalizeDelta();
+    Delta_ = Delta_.Normalized();
 
 #if 0
     if (GetAsyncKeyState(VK_UP)) // ↑

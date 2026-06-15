@@ -11,8 +11,11 @@ GameEngine::GameEngine()
 
 GameEngine::~GameEngine()
 {
-    delete currentScene;
-    currentScene = nullptr;
+    for (BaseScene* Scene : Scenes)
+    {
+        delete Scene;
+        Scene = nullptr;
+    }
 }
 
 GameEngine& GameEngine::Instance()
@@ -20,6 +23,11 @@ GameEngine& GameEngine::Instance()
     // 함수 내부 정적 변수: 프로그램 라이프사이클 동안 딱 '한 번'만 생성
     static GameEngine instance;
     return instance;
+}
+
+void GameEngine::AddNewScene(BaseScene* Scene)
+{
+    Scenes.push_back(Scene);
 }
 
 void GameEngine::Run()
@@ -38,30 +46,35 @@ void GameEngine::Run()
     }
 }
 
-void GameEngine::ChangeScene(BaseScene* newScene)
+void GameEngine::ChangeScene(BaseScene* Scene)
 {
-    if (currentScene)
+    if (CurrentScene)
     {
-        currentScene->Exit();
+        CurrentScene->Exit();
     }
-    currentScene = newScene;
-    if (currentScene)
+    CurrentScene = Scene;
+    if (CurrentScene)
     {
-        currentScene->Enter();
+        CurrentScene->Enter();
     }
+}
+
+void GameEngine::ChangeScene(SceneType InSceneType)
+{
+    ChangeScene(Scenes[static_cast<int>(InSceneType)]);
 }
 
 void GameEngine::Update()
 {
-    if (currentScene) currentScene->Update();
+    if (CurrentScene) CurrentScene->Update();
 }
 
 void GameEngine::Render()
 {
-    if (currentScene)
+    if (CurrentScene)
     {
         SetCursorPosition(0, 0);
-        currentScene->Render();
+        CurrentScene->Render();
     }
 }
 
@@ -71,14 +84,14 @@ void GameEngine::SetCursorPosition(int X, int Y)
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Coord);
 }
 
-GameObject* GameEngine::Instantiate(GameObject* InGameObject, const Transform& InTransform, const Vector2& InDelta)
+GameObject* GameEngine::Instantiate(GameObject* InGameObject, const Transform& InTransform, const Vector2& InDelta, float InTimer)
 {
-    return currentScene->Instantiate(InGameObject, InTransform, InDelta);
+    return CurrentScene->Instantiate(InGameObject, InTransform, InDelta, InTimer);
 }
 
-GameObject* GameEngine::Instantiate(const GameObjectType InGameObjectType, const Transform& InTransform, const Vector2& InDelta)
+GameObject* GameEngine::Instantiate(const GameObjectType InGameObjectType, const Transform& InTransform, const Vector2& InDelta, float InTimer)
 {
-    return currentScene->Instantiate(InGameObjectType, InTransform, InDelta);
+    return CurrentScene->Instantiate(InGameObjectType, InTransform, InDelta, InTimer);
 }
 
 void GameEngine::HideCursor()

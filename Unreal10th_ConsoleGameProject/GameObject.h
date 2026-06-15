@@ -85,19 +85,4 @@ protected:
     std::vector<std::wstring> RenderString_;
 
     inline void UpdateNextPosition() { NextPosition_ = Transform_.Position + Delta_; }
-    inline void NormalizeDelta()
-    {
-        float len = std::sqrt(Delta_.X * Delta_.X + Delta_.Y * Delta_.Y);
-
-        // 길이가 0인 경우(정지 상태) 나누기 에러 방지
-        if (len == 0.0f)
-        {
-            Delta_.X = 0.0f;
-            Delta_.Y = 0.0f;
-            return;
-        }
-
-        Delta_.X /= len;
-        Delta_.Y /= len;
-    }
 };

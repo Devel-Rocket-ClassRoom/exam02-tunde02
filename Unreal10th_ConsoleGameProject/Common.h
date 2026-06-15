@@ -5,6 +5,12 @@
 #include <string>
 #include <cmath>
 
+enum class SceneType
+{
+    MenuScene = 0,
+    Stage1Scene = 1
+};
+
 enum class GameObjectType
 {
     None,
@@ -48,7 +54,8 @@ enum class CollisionLayer
     Player,
     Wall,
     Monster,
-    Bullet
+    Bullet,
+    Item
 };
 
 enum class Direction
@@ -67,6 +74,12 @@ enum class Faction
     Monster = 1 << 2
 };
 
+struct KeyPressState
+{
+    int KeyCode;
+    bool bIsKeyPressed;
+};
+
 struct Vector2
 {
     float X = 0.0f;
@@ -82,7 +95,24 @@ struct Vector2
 
     //std::pair<int, int> ToRoundInt() const { return { static_cast<int>(X), static_cast<int>(Y) }; }
     //std::pair<int, int> ToRoundInt() const { return { static_cast<int>(std::round(X)), static_cast<int>(std::round(Y)) }; }
-    std::pair<int, int> ToRoundInt() const { return { static_cast<int>(std::floor(X)), static_cast<int>(std::floor(Y)) }; }
+    inline std::pair<int, int> ToRoundInt() const { return { static_cast<int>(std::floor(X)), static_cast<int>(std::floor(Y)) }; }
+    inline Vector2 Normalized() const {
+        Vector2 NormalizedVector2{};
+        float len = std::sqrt(X * X + Y * Y);
+
+        // 길이가 0인 경우(정지 상태) 나누기 에러 방지
+        if (len == 0.0f)
+        {
+            NormalizedVector2.X = 0.0f;
+            NormalizedVector2.Y = 0.0f;
+            return NormalizedVector2;
+        }
+
+        NormalizedVector2.X = X / len;
+        NormalizedVector2.Y = Y / len;
+
+        return NormalizedVector2;
+    }
 };
 
 struct Transform
